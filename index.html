@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Smart TV Web Launcher - Hisense VIDAA</title>
+  
+  <!-- HLS.js CDN con fallback automático para navegadores antiguos -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+
+  <style>
+    /* RESET & OPTIMIZACIONES PARA EMBEBIDOS / VIDAA / OPERA TV */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      outline: none;
+    }
+
+    body {
+      background-color: #0b0c10;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Borde de foco ultra visible para sillón (4px cyan brillante + GPU scale) */
+    .focusable {
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.12s ease-out;
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    .focusable.focused {
+      outline: 4px solid #00f0ff !important;
+      outline-offset: 2px;
+      transform: scale(1.06) translateZ(0) !important;
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.75) !important;
+      z-index: 100;
+    }
+
+    /* HEADER */
+    header {
+      height: 90px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #11141c;
+      border-bottom: 2px solid #1f2430;
+      flex-shrink: 0;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand-logo {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo span {
+      color: #00f0ff;
+    }
+
+    .system-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: #192231;
+      color: #00e5ff;
+      border: 1px solid #00f0ff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* CLOCK SECTION */
+    .clock-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .clock-time {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #ffffff;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-date {
+      font-size: 13px;
+      color: #9aa0a6;
+      font-weight: 500;
+      margin-top: 4px;
+      text-transform: capitalize;
+    }
+
+    /* WEATHER SECTION */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .weather-widget {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #181d28;
+      border: 1px solid #283042;
+      border-radius: 10px;
+      padding: 8px 16px;
+    }
+
+    .weather-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .weather-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .weather-temp {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .weather-loc {
+      font-size: 11px;
+      color: #00f0ff;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .search-btn {
+      background: #1b212f;
+      border: 1px solid #2e384d;
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* MAIN VIEWPORT */
+    main {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #d1d5db;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 18px;
+      background: #00f0ff;
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    /* APPS GRID */
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 20px;
+    }
+
+    .app-card {
+      background: #141824;
+      border: 2px solid #232a3d;
+      border-radius: 14px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      text-decoration: none;
+      color: #ffffff;
+      height: 160px;
+      text-align: center;
+    }
+
+    .app-icon-wrap {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-icon-wrap svg {
+      width: 36px;
+      height: 36px;
+      fill: #ffffff;
+    }
+
+    .app-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .app-tag {
+      font-size: 11px;
+      color: #8892b0;
+      font-weight: 600;
+    }
+
+    /* THEMES FOR APPS */
+    .app-card.youtube .app-icon-wrap { background: #ff0000; }
+    .app-card.pluto .app-icon-wrap { background: #004b93; }
+    .app-card.plex .app-icon-wrap { background: #e5a00d; }
+    .app-card.twitch .app-icon-wrap { background: #9146ff; }
+    .app-card.iptv .app-icon-wrap { background: #00b4d8; }
+    .app-card.browser .app-icon-wrap { background: #2a9d8f; }
+
+    /* FEATURED CHANNELS GRID */
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+    }
+
+    .channel-card {
+      background: #131722;
+      border: 2px solid #202738;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 140px;
+      position: relative;
+    }
+
+    .channel-logo-container {
+      width: 70px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d1017;
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .channel-logo-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .channel-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      text-align: center;
+      margin-top: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+
+    .channel-badge {
+      font-size: 11px;
+      background: #1f2738;
+      color: #00f0ff;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* MODAL GENERAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #090b10;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    /* IPTV DRAWER / MODAL */
+    .iptv-header {
+      height: 80px;
+      background: #11141c;
+      border-bottom: 2px solid #1f2430;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .iptv-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .iptv-categories {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+    }
+
+    .cat-btn {
+      background: #19202f;
+      border: 1px solid #2a354c;
+      color: #c9d1d9;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .cat-btn.active {
+      background: #00f0ff;
+      color: #000000;
+      border-color: #00f0ff;
+    }
+
+    .close-btn {
+      background: #2b1d24;
+      border: 1px solid #742a2a;
+      color: #ff6b6b;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .iptv-body {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+    }
+
+    .iptv-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+
+    /* FULLSCREEN VIDEO PLAYER OVERLAY */
+    #player-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000000;
+      z-index: 2000;
+      display: none;
+    }
+
+    #player-modal.active {
+      display: block;
+    }
+
+    #main-video {
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      object-fit: contain;
+    }
+
+    .player-osd {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 30px 50px;
+      background: linear-gradient(0deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: opacity 0.3s ease;
+      opacity: 1;
+      z-index: 2010;
+    }
+
+    .player-osd.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .player-channel-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .player-channel-meta {
+      font-size: 15px;
+      color: #00f0ff;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background: #ff3344;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .player-btn {
+      background: #181d28;
+      border: 2px solid #283042;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #00f0ff;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: rgba(0,0,0,0.7);
+      padding: 15px 30px;
+      border-radius: 8px;
+      border: 1px solid #00f0ff;
+      display: none;
+    }
+
+    /* SEARCH MODAL */
+    #search-modal {
+      align-items: center;
+      justify-content: center;
+      background: rgba(11, 14, 20, 0.96);
+    }
+
+    .search-box {
+      width: 750px;
+      background: #151a26;
+      border: 2px solid #273046;
+      border-radius: 16px;
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .search-box h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-input-wrap {
+      display: flex;
+      gap: 12px;
+    }
+
+    .search-input {
+      flex: 1;
+      height: 54px;
+      background: #0d1017;
+      border: 2px solid #2a3449;
+      border-radius: 10px;
+      padding: 0 20px;
+      font-size: 20px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .search-engines {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .engine-btn {
+      background: #1d2333;
+      border: 1px solid #2d3851;
+      border-radius: 10px;
+      padding: 16px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* FOOTER BARRA DE GUÍA DE TECLAS (REMOTE BAR) */
+    footer {
+      height: 48px;
+      background: #0d0f15;
+      border-top: 1px solid #1a1e28;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 35px;
+      font-size: 13px;
+      color: #8b949e;
+      flex-shrink: 0;
+    }
+
+    .key-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .key-badge {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand-section">
+      <div class="brand-logo">HISENSE <span>VIDAA</span></div>
+      <div class="system-badge">RAM OPTIMIZED</div>
+    </div>
+
+    <div class="clock-section">
+      <div id="clock-time" class="clock-time">--:--:--</div>
+      <div id="clock-date" class="clock-date">Cargando fecha...</div>
+    </div>
+
+    <div class="header-actions">
+      <div id="weather-widget" class="weather-widget">
+        <div id="weather-icon" class="weather-icon">⛅</div>
+        <div class="weather-info">
+          <div id="weather-temp" class="weather-temp">--°C</div>
+          <div class="weather-loc">Temuco, CL</div>
+        </div>
+      </div>
+
+      <button id="btn-open-search" class="focusable search-btn" tabindex="0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        Buscador
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN LAUNCHER CONTENT -->
+  <main id="main-container">
+    
+    <!-- APPS & STREAMING DOCK -->
+    <section>
+      <div class="section-title">Aplicaciones y Streaming</div>
+      <div class="apps-grid">
+        
+        <!-- YOUTUBE TV -->
+        <a href="https://www.youtube.com/tv" class="focusable app-card youtube" tabindex="0" data-name="YouTube TV">
+          <div class="app-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </div>
+          <div class="app-name">YouTube TV</div>
+          <div class="app-tag">Oficial TV</div>
+        </a>
+
+        <!-- PLUTO TV -->
+        <a href="https://pluto.tv" class="focusable app-card pluto" tabindex="0" data-name="Pluto TV">
+          <div class="app-icon-wrap">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="app-name">Pluto TV</div>
+          <div class="app-tag">Canales Gratis</div>
+        </a>
+
+        <!-- PLEX WEB -->
+        <a href="https://app.plex.tv" class="focusable app-card plex" tabindex="0" data-name="Plex">
+          <div class="app-icon-wrap">
+            <svg viewBox="0 0 24 24"><polygon points="3 3 10 3 15 12 10 21 3 21 8 12 3 3"/><polygon points="14 3 21 3 21 21 14 21 19 12 14 3"/></svg>
+          </div>
+          <div class="app-name">Plex Web</div>
+          <div class="app-tag">Media Center</div>
+        </a>
+
+        <!-- TWITCH TV -->
+        <a href="https://www.twitch.tv" class="focusable app-card twitch" tabindex="0" data-name="Twitch TV">
+          <div class="app-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
+          </div>
+          <div class="app-name">Twitch TV</div>
+          <div class="app-tag">En Vivo</div>
+        </a>
+
+        <!-- TV EN VIVO (IPTV INTEGRADO) -->
+        <div id="btn-open-iptv" class="focusable app-card iptv" tabindex="0" data-name="TV en Vivo">
+          <div class="app-icon-wrap">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          </div>
+          <div class="app-name">TV en Vivo</div>
+          <div class="app-tag">20 Canales M3U8</div>
+        </div>
+
+        <!-- BUSCADOR / NAVEGADOR -->
+        <div id="btn-quick-search-card" class="focusable app-card browser" tabindex="0" data-name="Buscador Web">
+          <div class="app-icon-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="app-name">Buscador Web</div>
+          <div class="app-tag">Google & DDG</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CANALES DESTACADOS (ACCESO DIRECTO RÁPIDO) -->
+    <section>
+      <div class="section-title">Canales Destacados en Vivo (Clic o OK para reproducir)</div>
+      <div id="featured-channels-grid" class="channels-grid">
+        <!-- Renderizado dinámico desde validChannels -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- IPTV DRAWER / MODAL COMPLETO -->
+  <div id="iptv-modal" class="modal-overlay">
+    <div class="iptv-header">
+      <div class="iptv-title">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        Guía de Canales en Vivo (IPTV Chile & Mundo)
+      </div>
+      <div class="iptv-categories" id="category-pills">
+        <button class="focusable cat-btn active" data-cat="ALL" tabindex="0">Todos (20)</button>
+        <button class="focusable cat-btn" data-cat="Chile" tabindex="0">Chile</button>
+        <button class="focusable cat-btn" data-cat="Noticias" tabindex="0">Noticias</button>
+        <button class="focusable cat-btn" data-cat="Cultura" tabindex="0">Cultura</button>
+        <button class="focusable cat-btn" data-cat="Deportes" tabindex="0">Deportes</button>
+        <button class="focusable cat-btn" data-cat="Internacional" tabindex="0">Mundo</button>
+      </div>
+      <button id="btn-close-iptv" class="focusable close-btn" tabindex="0">Volver (Atrás)</button>
+    </div>
+
+    <div class="iptv-body">
+      <div id="all-channels-grid" class="iptv-grid">
+        <!-- Renderizado dinámico de canales -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FULLSCREEN DEL REPRODUCTOR DE VIDEO -->
+  <div id="player-modal">
+    <video id="main-video" playsinline webkit-playsinline></video>
+    
+    <div id="player-loading" class="player-loading">Sintonizando señal en vivo...</div>
+
+    <div id="player-osd" class="player-osd">
+      <div class="player-info">
+        <div id="player-title" class="player-channel-title">Canal</div>
+        <div class="player-channel-meta">
+          <span class="live-dot"></span>
+          <span id="player-group">Chile</span>
+          <span>•</span>
+          <span id="player-quality">HLS Stream</span>
+          <span>•</span>
+          <span id="player-status">EN VIVO</span>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <button id="btn-prev-channel" class="focusable player-btn" tabindex="0">◀ Anterior</button>
+        <button id="btn-play-pause" class="focusable player-btn" tabindex="0">⏸ Pausa</button>
+        <button id="btn-next-channel" class="focusable player-btn" tabindex="0">Siguiente ▶</button>
+        <button id="btn-close-player" class="focusable player-btn" style="border-color:#e63946; color:#ff6b6b;" tabindex="0">✕ Salir (Atrás)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE BÚSQUEDA RÁPIDA -->
+  <div id="search-modal" class="modal-overlay">
+    <div class="search-box">
+      <h2>
+        <span>Buscador Web Ligero</span>
+        <button id="btn-close-search" class="focusable close-btn" tabindex="0">Cerrar</button>
+      </h2>
+      <div class="search-input-wrap">
+        <input type="text" id="search-query" class="search-input" placeholder="Escribe aquí tu búsqueda..." autofocus>
+      </div>
+      <div class="search-engines">
+        <button class="focusable engine-btn" data-url="https://www.google.com/search?q=" tabindex="0">Buscar en Google</button>
+        <button class="focusable engine-btn" data-url="https://duckduckgo.com/?q=" tabindex="0">Buscar en DuckDuckGo</button>
+        <button class="focusable engine-btn" data-url="https://es.wikipedia.org/wiki/Special:Search?search=" tabindex="0">Buscar en Wikipedia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA DE GUÍA DE TECLAS (FOOTER) -->
+  <footer>
+    <div class="key-hint"><span class="key-badge">▲ ▼ ◀ ▶</span> Navegar D-Pad</div>
+    <div class="key-hint"><span class="key-badge">OK / Enter</span> Seleccionar</div>
+    <div class="key-hint"><span class="key-badge">Atrás / Return / Esc</span> Salir / Volver</div>
+    <div class="key-hint"><span class="key-badge">Temuco</span> Pronóstico en tiempo real</div>
+  </footer>
+
+  <!-- LÓGICA DE CONTROL, SPA-DPAD Y GESTIÓN DE RAM -->
+  <script>
+    // MANEJO GLOBAL DE ERRORES (Evita congelamiento de la TV por scripts caídos)
+    window.onerror = function(msg, url, line) {
+      console.warn("TV-Safe caught error: " + msg + " at " + line);
+      return true;
+    };
+
+    // LISTA DE CANALES VALIDADOS EN FASE 2 (100% OPERATIVOS Y CON SOPORTE HLS)
+    var VALID_CHANNELS = [
+      {
+        name: "ADN TV Chile",
+        logo: "https://i.imgur.com/AVfTwNw.png",
+        group: "Noticias",
+        url: "https://redirector.rudo.video/hls-video/931b584451fa6dd1313ee66efbfd5802e3f3bcea/adntv/adntv.smil/playlist.m3u8"
+      },
+      {
+        name: "Canal 13 Chile",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Canal_13_logo_%282018%29.svg",
+        group: "Chile",
+        url: "https://origin.dpsgo.com/ssai/event/BBp0VeP6QtOOlH8nu3bWTg/master.m3u8"
+      },
+      {
+        name: "13C (Chile)",
+        logo: "https://i.imgur.com/Zfe2f5j.png",
+        group: "Cultura",
+        url: "https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8"
+      },
+      {
+        name: "13 Realities",
+        logo: "https://i.imgur.com/m0SuwMU.png",
+        group: "Chile",
+        url: "https://origin.dpsgo.com/ssai/event/g7_JOM0ORki9SR5RKHe-Kw/master.m3u8"
+      },
+      {
+        name: "13 Kids",
+        logo: "https://i.imgur.com/8WJUbSD.png",
+        group: "Cultura",
+        url: "https://origin.dpsgo.com/ssai/event/LhHrVtyeQkKZ-Ye_xEU75g/master.m3u8"
+      },
+      {
+        name: "13 Humor",
+        logo: "https://i.imgur.com/KvMuTzN.png",
+        group: "Chile",
+        url: "https://origin.dpsgo.com/ssai/event/cKWySXKgSK-SzlJmESkOWw/master.m3u8"
+      },
+      {
+        name: "13 Festival",
+        logo: "https://i.imgur.com/Ymk6j5o.png",
+        group: "Cultura",
+        url: "https://origin.dpsgo.com/ssai/event/Nftd0fM2SXasfDlRphvUsg/master.m3u8"
+      },
+      {
+        name: "13 Telenovelas",
+        logo: "https://i.imgur.com/csBNi2L.png",
+        group: "Chile",
+        url: "https://origin.dpsgo.com/ssai/event/f4TrySe8SoiGF8Lu3EIq1g/master.m3u8"
+      },
+      {
+        name: "Antofagasta TV",
+        logo: "https://i.imgur.com/2b3WwQz.png",
+        group: "Chile",
+        url: "https://unlimited6-cl.dps.live/atv/atv.smil/playlist.m3u8"
+      },
+      {
+        name: "DW Español",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/7/75/Deutsche_Welle_logo.svg",
+        group: "Noticias",
+        url: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8"
+      },
+      {
+        name: "NASA TV HD",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/e/e5/NASA_logo.svg",
+        group: "Cultura",
+        url: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8"
+      },
+      {
+        name: "Red Bull TV",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Red_Bull_TV_logo.png",
+        group: "Deportes",
+        url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8"
+      },
+      {
+        name: "13P Lifestyle",
+        logo: "https://i.imgur.com/R6D228s.png",
+        group: "Chile",
+        url: "https://origin.dpsgo.com/ssai/event/p4mmBxEzSmKAxY1GusOHrw/master.m3u8"
+      },
+      {
+        name: "15.1 BPB",
+        logo: "https://i.imgur.com/hyxkJYV.png",
+        group: "Chile",
+        url: "https://v2.tustreaming.cl/enlacebpbtv/index.m3u8"
+      },
+      {
+        name: "ADA TV",
+        logo: "https://cdn.m3u.cl/logo/1638_ADA_TV.png",
+        group: "Internacional",
+        url: "https://live-evg10.tv360.bitel.com.pe/bitel/alasdeaguilaSRT/playlist.m3u8"
+      },
+      {
+        name: "AE Radio TV",
+        logo: "https://i.imgur.com/425dj2i.jpeg",
+        group: "Cultura",
+        url: "https://tls-cl.cdnz.cl/aeradio/live/playlist.m3u8"
+      },
+      {
+        name: "Agricultura TV",
+        logo: "https://i.imgur.com/sxrYc3Q.png",
+        group: "Noticias",
+        url: "https://redirector.rudo.video/hls-video/ey6283je82983je9823je8jowowiekldk9838274/921tv/921tv.smil/playlist.m3u8"
+      },
+      {
+        name: "Alternativa TV",
+        logo: "https://i.imgur.com/KCrSbgv.png",
+        group: "Chile",
+        url: "https://live20.bozztv.com/giatv/giatv-alternativatv/alternativatv/playlist.m3u8"
+      },
+      {
+        name: "AM Canal",
+        logo: "https://i.imgur.com/wfi9NXL.png",
+        group: "Internacional",
+        url: "https://streaming.bitsur.cl:3534/live/vdo1102live.m3u8"
+      },
+      {
+        name: "Atacama Noticias",
+        logo: "https://i.imgur.com/Avx4Ecf.png",
+        group: "Noticias",
+        url: "https://v2.tustreaming.cl/atacamanoticias/index.m3u8"
+      }
+    ];
+
+    // ESTADO DE LA APLICACIÓN
+    var currentFocusedEl = null;
+    var lastFocusedBeforeModal = null;
+    var hlsInstance = null;
+    var currentChannelIndex = 0;
+    var osdTimeout = null;
+    var activeCategory = "ALL";
+
+    // RELOJ EN TIEMPO REAL
+    function updateClock() {
+      try {
+        var now = new Date();
+        var hours = String(now.getHours()).padStart(2, '0');
+        var minutes = String(now.getMinutes()).padStart(2, '0');
+        var seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        var clockEl = document.getElementById('clock-time');
+        if (clockEl) clockEl.innerText = hours + ':' + minutes + ':' + seconds;
+
+        var options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        var dateStr = now.toLocaleDateString('es-CL', options);
+        var dateEl = document.getElementById('clock-date');
+        if (dateEl) dateEl.innerText = dateStr;
+      } catch (e) {
+        console.warn('Clock error:', e);
+      }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // WIDGET DE CLIMA PARA TEMUCO, CHILE (OPEN-METEO CON FALLBACK)
+    function fetchTemucoWeather() {
+      var url = 'https://api.open-meteo.com/v1/forecast?latitude=-38.7359&longitude=-72.5904&current_weather=true';
+      var tempEl = document.getElementById('weather-temp');
+      var iconEl = document.getElementById('weather-icon');
+
+      fetch(url)
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(data) {
+          if (data && data.current_weather) {
+            var temp = Math.round(data.current_weather.temperature);
+            var code = data.current_weather.weathercode;
+            if (tempEl) tempEl.innerText = temp + '°C';
+            
+            // Icono según WMO code
+            var icon = '⛅';
+            if (code === 0) icon = '☀️';
+            else if (code >= 1 && code <= 3) icon = '🌤️';
+            else if (code >= 45 && code <= 48) icon = '🌫️';
+            else if (code >= 51 && code <= 67) icon = '🌧️';
+            else if (code >= 71 && code <= 77) icon = '❄️';
+            else if (code >= 80 && code <= 82) icon = '🌦️';
+            else if (code >= 95) icon = '⛈️';
+            if (iconEl) iconEl.innerText = icon;
+          }
+        })
+        .catch(function(err) {
+          console.warn('Weather fetch fallback:', err);
+          if (tempEl && tempEl.innerText.indexOf('°C') === -1) {
+            tempEl.innerText = '14°C';
+          }
+        });
+    }
+    fetchTemucoWeather();
+    setInterval(fetchTemucoWeather, 900000); // Cada 15 minutos
+
+    // RENDERIZADO DE CANALES
+    function renderChannels() {
+      // 1. Canales destacados (primeros 5)
+      var featContainer = document.getElementById('featured-channels-grid');
+      if (featContainer) {
+        featContainer.innerHTML = '';
+        var featured = VALID_CHANNELS.slice(0, 5);
+        featured.forEach(function(ch, idx) {
+          var card = document.createElement('div');
+          card.className = 'focusable channel-card';
+          card.tabIndex = 0;
+          card.setAttribute('data-channel-idx', idx);
+          card.innerHTML = 
+            '<div class="channel-logo-container">' +
+              '<img src="' + ch.logo + '" alt="' + ch.name + '" onerror="this.src=\'data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'60\\\' height=\\\'40\\\'><rect width=\\\'60\\\' height=\\\'40\\\' fill=\\\'%23202738\\\'/><text x=\\\'50%\\\' y=\\\'55%\\\' fill=\\\'%23ffffff\\\' font-size=\\\'10\\\' text-anchor=\\\'middle\\\' alignment-baseline=\\\'middle\\\'>' + encodeURIComponent(ch.name.slice(0,6)) + '</text></svg>\'">' +
+            '</div>' +
+            '<div class="channel-name">' + ch.name + '</div>' +
+            '<div class="channel-badge">' + ch.group + '</div>';
+          
+          card.onclick = function() { playChannel(idx); };
+          featContainer.appendChild(card);
+        });
+      }
+
+      // 2. Grilla completa de canales en IPTV Modal
+      renderIptvGrid();
+    }
+
+    function renderIptvGrid() {
+      var grid = document.getElementById('all-channels-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      VALID_CHANNELS.forEach(function(ch, idx) {
+        if (activeCategory !== "ALL" && ch.group.toLowerCase().indexOf(activeCategory.toLowerCase()) === -1) {
+          return;
+        }
+
+        var card = document.createElement('div');
+        card.className = 'focusable channel-card';
+        card.tabIndex = 0;
+        card.setAttribute('data-channel-idx', idx);
+        card.innerHTML = 
+          '<div class="channel-logo-container">' +
+            '<img src="' + ch.logo + '" alt="' + ch.name + '" onerror="this.src=\'data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'60\\\' height=\\\'40\\\'><rect width=\\\'60\\\' height=\\\'40\\\' fill=\\\'%23202738\\\'/><text x=\\\'50%\\\' y=\\\'55%\\\' fill=\\\'%23ffffff\\\' font-size=\\\'10\\\' text-anchor=\\\'middle\\\' alignment-baseline=\\\'middle\\\'>' + encodeURIComponent(ch.name.slice(0,6)) + '</text></svg>\'">' +
+          '</div>' +
+          '<div class="channel-name">' + ch.name + '</div>' +
+          '<div class="channel-badge">' + ch.group + '</div>';
+        
+        card.onclick = function() { playChannel(idx); };
+        grid.appendChild(card);
+      });
+    }
+
+    // MOTOR DE NAVEGACIÓN ESPACIAL MATRICIAL (D-PAD REAL PARA CONTROL REMOTO)
+    function setFocus(el) {
+      if (!el) return;
+      if (currentFocusedEl) {
+        currentFocusedEl.classList.remove('focused');
+      }
+      currentFocusedEl = el;
+      currentFocusedEl.classList.add('focused');
+      currentFocusedEl.focus();
+
+      // Desplazamiento suave para visibilidad sin tirones
+      currentFocusedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
+
+    function getActiveScope() {
+      var playerModal = document.getElementById('player-modal');
+      if (playerModal && playerModal.classList.contains('active')) {
+        return playerModal;
+      }
+      var searchModal = document.getElementById('search-modal');
+      if (searchModal && searchModal.classList.contains('active')) {
+        return searchModal;
+      }
+      var iptvModal = document.getElementById('iptv-modal');
+      if (iptvModal && iptvModal.classList.contains('active')) {
+        return iptvModal;
+      }
+      return document.getElementById('main-container') || document.body;
+    }
+
+    function getFocusableElements(container) {
+      if (!container) container = document.body;
+      var els = container.querySelectorAll('.focusable');
+      var visible = [];
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el.offsetParent !== null && !el.disabled) {
+          visible.push(el);
+        }
+      }
+      return visible;
+    }
+
+    function navigateSpatial(dir) {
+      var scope = getActiveScope();
+      var focusables = getFocusableElements(scope);
+
+      // Si el OSD del reproductor estaba oculto, cualquier flecha lo muestra
+      var playerModal = document.getElementById('player-modal');
+      if (playerModal && playerModal.classList.contains('active')) {
+        showPlayerOSD();
+      }
+
+      if (focusables.length === 0) return;
+
+      if (!currentFocusedEl || !scope.contains(currentFocusedEl)) {
+        setFocus(focusables[0]);
+        return;
+      }
+
+      var currRect = currentFocusedEl.getBoundingClientRect();
+      var currX = currRect.left + currRect.width / 2;
+      var currY = currRect.top + currRect.height / 2;
+
+      var bestCandidate = null;
+      var bestScore = Infinity;
+
+      for (var i = 0; i < focusables.length; i++) {
+        var el = focusables[i];
+        if (el === currentFocusedEl) continue;
+
+        var r = el.getBoundingClientRect();
+        var x = r.left + r.width / 2;
+        var y = r.top + r.height / 2;
+
+        var dx = x - currX;
+        var dy = y - currY;
+
+        var isCandidate = false;
+        var score = Infinity;
+
+        if (dir === 'right' && dx > 8) {
+          isCandidate = true;
+          score = dx + Math.abs(dy) * 2.8;
+        } else if (dir === 'left' && dx < -8) {
+          isCandidate = true;
+          score = Math.abs(dx) + Math.abs(dy) * 2.8;
+        } else if (dir === 'down' && dy > 8) {
+          isCandidate = true;
+          score = dy + Math.abs(dx) * 1.8;
+        } else if (dir === 'up' && dy < -8) {
+          isCandidate = true;
+          score = Math.abs(dy) + Math.abs(dx) * 1.8;
+        }
+
+        if (isCandidate && score < bestScore) {
+          bestScore = score;
+          bestCandidate = el;
+        }
+      }
+
+      if (bestCandidate) {
+        setFocus(bestCandidate);
+      }
+    }
+
+    function activateFocused() {
+      if (!currentFocusedEl) return;
+      currentFocusedEl.click();
+    }
+
+    // MANEJO DEL BOTÓN VOLVER / ATRÁS (BACK / RETURN / ESCAPE)
+    function handleBack() {
+      // 1. Si el reproductor está abierto, cerrarlo y destruir buffers
+      var playerModal = document.getElementById('player-modal');
+      if (playerModal && playerModal.classList.contains('active')) {
+        closePlayer();
+        return true;
+      }
+
+      // 2. Si el buscador está abierto, cerrarlo
+      var searchModal = document.getElementById('search-modal');
+      if (searchModal && searchModal.classList.contains('active')) {
+        closeSearch();
+        return true;
+      }
+
+      // 3. Si el modal de IPTV está abierto, cerrarlo
+      var iptvModal = document.getElementById('iptv-modal');
+      if (iptvModal && iptvModal.classList.contains('active')) {
+        closeIPTV();
+        return true;
+      }
+
+      return false;
+    }
+
+    // LISTENER DE TECLADO / CONTROL REMOTO (VIDAA / OPERA TV COMPATIBLE)
+    window.addEventListener('keydown', function(e) {
+      var code = e.keyCode || e.which;
+      var key = e.key;
+
+      // RETORNO / ATRÁS: Backspace (8), Esc (27), Hisense/Opera/Tizen (461, 10009)
+      if (code === 8 || code === 27 || code === 461 || code === 10009 || key === 'Escape' || key === 'Backspace' || key === 'GoBack') {
+        if (handleBack()) {
+          e.preventDefault();
+          return;
+        }
+      }
+
+      // D-PAD FLECHAS
+      if (code === 37 || key === 'ArrowLeft') {
+        e.preventDefault();
+        navigateSpatial('left');
+      } else if (code === 38 || key === 'ArrowUp') {
+        e.preventDefault();
+        navigateSpatial('up');
+      } else if (code === 39 || key === 'ArrowRight') {
+        e.preventDefault();
+        navigateSpatial('right');
+      } else if (code === 40 || key === 'ArrowDown') {
+        e.preventDefault();
+        navigateSpatial('down');
+      } else if (code === 13 || key === 'Enter') {
+        e.preventDefault();
+        activateFocused();
+      }
+    });
+
+    // GESTIÓN DE RAM Y REPRODUCCIÓN IPTV (REGLA CRÍTICA)
+    function playChannel(index) {
+      if (index < 0 || index >= VALID_CHANNELS.length) return;
+      currentChannelIndex = index;
+      var channel = VALID_CHANNELS[index];
+
+      lastFocusedBeforeModal = currentFocusedEl;
+
+      var playerModal = document.getElementById('player-modal');
+      var video = document.getElementById('main-video');
+      var loadingEl = document.getElementById('player-loading');
+      var titleEl = document.getElementById('player-title');
+      var groupEl = document.getElementById('player-group');
+      var playPauseBtn = document.getElementById('btn-play-pause');
+
+      titleEl.innerText = channel.name;
+      groupEl.innerText = channel.group;
+      if (loadingEl) loadingEl.style.display = 'block';
+
+      playerModal.classList.add('active');
+      showPlayerOSD();
+
+      // DESTRUCCIÓN PREVIA OBLIGATORIA PARA LIBERAR BUFFER DE RAM
+      if (hlsInstance) {
+        try {
+          hlsInstance.stopLoad();
+          hlsInstance.detachMedia();
+          hlsInstance.destroy();
+        } catch (err) {
+          console.warn('Error destroying prior Hls:', err);
+        }
+        hlsInstance = null;
+      }
+
+      try {
+        video.pause();
+        video.removeAttribute('src');
+        video.src = '';
+        video.load(); // Vacia buffer de TV
+      } catch (err) {
+        console.warn('Error clearing video buffer:', err);
+      }
+
+      // Sintonización HLS con Hls.js o nativo
+      if (window.Hls && Hls.isSupported()) {
+        try {
+          var hls = new Hls({
+            enableWorker: false, // Menor overhead de CPU en Smart TV antiguas
+            lowLatencyMode: false,
+            maxBufferLength: 10,  // Restringe buffer para no saturar los 512MB/1GB de RAM de la TV
+            maxMaxBufferLength: 20
+          });
+          hlsInstance = hls;
+          hls.loadSource(channel.url);
+          hls.attachMedia(video);
+
+          hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            if (loadingEl) loadingEl.style.display = 'none';
+            video.play().catch(function(err) { console.log('Autoplay handled:', err); });
+            if (playPauseBtn) playPauseBtn.innerText = '⏸ Pausa';
+          });
+
+          hls.on(Hls.Events.ERROR, function(evt, data) {
+            if (data.fatal) {
+              console.warn('HLS Fatal Error:', data.type);
+              if (loadingEl) loadingEl.innerText = 'Reintentando señal...';
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  hls.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  hls.recoverMediaError();
+                  break;
+                default:
+                  closePlayer();
+                  break;
+              }
+            }
+          });
+        } catch (hlsInitErr) {
+          console.warn('HLS initialization error:', hlsInitErr);
+        }
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Fallback nativo (Safari / WebKit TV)
+        video.src = channel.url;
+        video.addEventListener('loadedmetadata', function() {
+          if (loadingEl) loadingEl.style.display = 'none';
+          video.play().catch(function(err) { console.log('Native autoplay:', err); });
+        });
+      }
+
+      // Posiciona el foco en el botón de Pausa del reproductor
+      if (playPauseBtn) {
+        setFocus(playPauseBtn);
+      }
+    }
+
+    function closePlayer() {
+      var playerModal = document.getElementById('player-modal');
+      if (playerModal) playerModal.classList.remove('active');
+
+      if (osdTimeout) {
+        clearTimeout(osdTimeout);
+        osdTimeout = null;
+      }
+
+      // CRÍTICO: DESTRUCCIÓN TOTAL DE HLS Y PURGA DE MEMORIA
+      if (hlsInstance) {
+        try {
+          hlsInstance.stopLoad();
+          hlsInstance.detachMedia();
+          hlsInstance.destroy();
+        } catch (e) {
+          console.warn('Hls destroy err:', e);
+        }
+        hlsInstance = null;
+      }
+
+      var video = document.getElementById('main-video');
+      if (video) {
+        try {
+          video.pause();
+          video.removeAttribute('src');
+          video.src = '';
+          video.load(); // Forzado de recolección de memoria
+        } catch (e) {
+          console.warn('Video buffer clean err:', e);
+        }
+      }
+
+      // Retorna el foco al elemento anterior
+      if (lastFocusedBeforeModal && document.body.contains(lastFocusedBeforeModal) && lastFocusedBeforeModal.offsetParent !== null) {
+        setFocus(lastFocusedBeforeModal);
+      } else {
+        var first = getFocusableElements(getActiveScope())[0];
+        if (first) setFocus(first);
+      }
+    }
+
+    function togglePlayPause() {
+      var video = document.getElementById('main-video');
+      var playPauseBtn = document.getElementById('btn-play-pause');
+      if (!video) return;
+
+      if (video.paused) {
+        video.play();
+        if (playPauseBtn) playPauseBtn.innerText = '⏸ Pausa';
+      } else {
+        video.pause();
+        if (playPauseBtn) playPauseBtn.innerText = '▶ Reanudar';
+      }
+      showPlayerOSD();
+    }
+
+    function showPlayerOSD() {
+      var osd = document.getElementById('player-osd');
+      if (!osd) return;
+      osd.classList.remove('hidden');
+
+      if (osdTimeout) clearTimeout(osdTimeout);
+      osdTimeout = setTimeout(function() {
+        // Solo oculta si el foco sigue en el reproductor pero no estamos cambiando de botón
+        osd.classList.add('hidden');
+      }, 4500);
+    }
+
+    // MODAL IPTV
+    function openIPTV() {
+      lastFocusedBeforeModal = currentFocusedEl;
+      var modal = document.getElementById('iptv-modal');
+      modal.classList.add('active');
+      renderIptvGrid();
+      
+      // Auto-foco en la primera categoría o primer canal
+      var firstBtn = modal.querySelector('.cat-btn');
+      if (firstBtn) setFocus(firstBtn);
+    }
+
+    function closeIPTV() {
+      var modal = document.getElementById('iptv-modal');
+      modal.classList.remove('active');
+      if (lastFocusedBeforeModal && document.body.contains(lastFocusedBeforeModal)) {
+        setFocus(lastFocusedBeforeModal);
+      } else {
+        var first = getFocusableElements(document.getElementById('main-container'))[0];
+        if (first) setFocus(first);
+      }
+    }
+
+    // MODAL DE BÚSQUEDA
+    function openSearch() {
+      lastFocusedBeforeModal = currentFocusedEl;
+      var modal = document.getElementById('search-modal');
+      modal.classList.add('active');
+      var input = document.getElementById('search-query');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      var firstEngine = modal.querySelector('.engine-btn');
+      if (firstEngine) setFocus(firstEngine);
+    }
+
+    function closeSearch() {
+      var modal = document.getElementById('search-modal');
+      modal.classList.remove('active');
+      if (lastFocusedBeforeModal && document.body.contains(lastFocusedBeforeModal)) {
+        setFocus(lastFocusedBeforeModal);
+      } else {
+        var first = getFocusableElements(document.getElementById('main-container'))[0];
+        if (first) setFocus(first);
+      }
+    }
+
+    function executeSearch(engineUrl) {
+      var input = document.getElementById('search-query');
+      var q = input ? input.value.trim() : '';
+      if (!q) q = 'Chile noticias';
+      window.location.href = engineUrl + encodeURIComponent(q);
+    }
+
+    // INICIALIZACIÓN DE EVENTOS Y FOCO DE ARRANQUE
+    window.addEventListener('DOMContentLoaded', function() {
+      renderChannels();
+
+      // Botones del reproductor
+      var playPauseBtn = document.getElementById('btn-play-pause');
+      if (playPauseBtn) playPauseBtn.onclick = togglePlayPause;
+
+      var closePlayerBtn = document.getElementById('btn-close-player');
+      if (closePlayerBtn) closePlayerBtn.onclick = closePlayer;
+
+      var prevBtn = document.getElementById('btn-prev-channel');
+      if (prevBtn) prevBtn.onclick = function() {
+        var nextIdx = (currentChannelIndex - 1 + VALID_CHANNELS.length) % VALID_CHANNELS.length;
+        playChannel(nextIdx);
+      };
+
+      var nextBtn = document.getElementById('btn-next-channel');
+      if (nextBtn) nextBtn.onclick = function() {
+        var nextIdx = (currentChannelIndex + 1) % VALID_CHANNELS.length;
+        playChannel(nextIdx);
+      };
+
+      // Botón abrir IPTV
+      var openIptvBtn = document.getElementById('btn-open-iptv');
+      if (openIptvBtn) openIptvBtn.onclick = openIPTV;
+
+      var closeIptvBtn = document.getElementById('btn-close-iptv');
+      if (closeIptvBtn) closeIptvBtn.onclick = closeIPTV;
+
+      // Filtros de categoría en IPTV
+      var catPills = document.querySelectorAll('.cat-btn');
+      catPills.forEach(function(pill) {
+        pill.onclick = function() {
+          catPills.forEach(function(p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+          activeCategory = pill.getAttribute('data-cat');
+          renderIptvGrid();
+          setFocus(pill);
+        };
+      });
+
+      // Botón buscador
+      var openSearchBtn = document.getElementById('btn-open-search');
+      if (openSearchBtn) openSearchBtn.onclick = openSearch;
+
+      var openSearchCard = document.getElementById('btn-quick-search-card');
+      if (openSearchCard) openSearchCard.onclick = openSearch;
+
+      var closeSearchBtn = document.getElementById('btn-close-search');
+      if (closeSearchBtn) closeSearchBtn.onclick = closeSearch;
+
+      var engineBtns = document.querySelectorAll('.engine-btn');
+      engineBtns.forEach(function(btn) {
+        btn.onclick = function() {
+          var url = btn.getAttribute('data-url');
+          executeSearch(url);
+        };
+      });
+
+      // FOCO AUTOMÁTICO AL CARGAR (Sin depender de ratón)
+      setTimeout(function() {
+        var firstCard = document.querySelector('.apps-grid .app-card');
+        if (firstCard) {
+          setFocus(firstCard);
+        }
+      }, 100);
+    });
+  </script>
+</body>
+</html>

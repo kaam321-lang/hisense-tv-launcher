@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+valid_channels.json
+*.log
