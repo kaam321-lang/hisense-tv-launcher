@@ -250,12 +250,18 @@
       color: #ffffff;
     }
 
-    .app-card.youtube .app-icon-wrap { background: #e50914; }
-    .app-card.pluto .app-icon-wrap { background: #004b93; }
-    .app-card.plex .app-icon-wrap { background: #e5a00d; }
-    .app-card.twitch .app-icon-wrap { background: #9146ff; }
-    .app-card.google .app-icon-wrap { background: #0f9d58; }
-    .app-card.weather .app-icon-wrap { background: #0077b6; }
+    .app-card.netflix .app-icon-wrap { background: #e50914; color: #ffffff; font-weight: 900; }
+    .app-card.youtube .app-icon-wrap { background: #ff0000; color: #ffffff; }
+    .app-card.disney .app-icon-wrap { background: #113ccf; color: #ffffff; font-size: 24px; font-weight: 900; }
+    .app-card.max .app-icon-wrap { background: #002be7; color: #ffffff; font-size: 20px; font-weight: 900; }
+    .app-card.paramount .app-icon-wrap { background: #0064ff; color: #ffffff; font-size: 24px; font-weight: 900; }
+    .app-card.apple .app-icon-wrap { background: #1a1a1a; border: 1px solid #444444; color: #ffffff; }
+    .app-card.prime .app-icon-wrap { background: #00a8e1; color: #ffffff; font-size: 22px; font-weight: 900; }
+    .app-card.pluto .app-icon-wrap { background: #ffcc00; color: #000000; }
+    .app-card.plex .app-icon-wrap { background: #e5a00d; color: #ffffff; }
+    .app-card.twitch .app-icon-wrap { background: #9146ff; color: #ffffff; }
+    .app-card.google .app-icon-wrap { background: #0f9d58; color: #ffffff; }
+    .app-card.weather .app-icon-wrap { background: #0077b6; color: #ffffff; }
 
     .app-name {
       font-size: 20px;
@@ -487,31 +493,76 @@
   <!-- CONTENIDO PRINCIPAL (100% ESTÁTICO: SE VE INCLUSO SI JAVASCRIPT FALLA) -->
   <main>
 
-    <!-- SECCIÓN 1: APLICACIONES Y PORTALES WEB -->
-    <div class="section-header">1. Aplicaciones y Streaming Web (OK para abrir)</div>
+    <!-- SECCIÓN 1: SERVICIOS Y STREAMING OFICIALES -->
+    <div class="section-header">1. Servicios de Streaming y Aplicaciones Web (OK para abrir)</div>
+    
+    <div style="background: #141b2e; border: 2px solid #283759; border-radius: 8px; padding: 12px 18px; margin-bottom: 15px; font-size: 16px; color: #cbd5e1; line-height: 24px;">
+      <span style="color: #00f0ff; font-weight: bold;">ESTADO TÉCNICO:</span> Enlaces oficiales agregados. Los servicios marcados como <i>"Pendiente de probar"</i> (Netflix, Max, Disney+, Prime Video, Apple TV+, Paramount+) dependen de la compatibilidad DRM del navegador nativo. Xuper y Magis son exclusivos del sistema Android (funcionando en tu decodificador).
+    </div>
+
+    <!-- FILA 1 DE SERVICIOS -->
     <div class="card-row">
-      <a href="https://www.youtube.com/tv" class="focusable app-card youtube focused" data-name="YouTube TV" tabindex="0">
+      <a href="https://www.netflix.com" class="focusable app-card netflix focused" data-name="Netflix" tabindex="0">
+        <div class="app-icon-wrap">N</div>
+        <div class="app-name">Netflix</div>
+        <div class="app-sub">Pendiente de probar</div>
+      </a>
+
+      <a href="https://www.youtube.com/tv" class="focusable app-card youtube" data-name="YouTube TV" tabindex="0">
         <div class="app-icon-wrap">▶</div>
         <div class="app-name">YouTube TV</div>
         <div class="app-sub">Portal Oficial TV</div>
       </a>
 
+      <a href="https://play.max.com" class="focusable app-card max" data-name="Max (HBO)" tabindex="0">
+        <div class="app-icon-wrap">MAX</div>
+        <div class="app-name">Max (HBO)</div>
+        <div class="app-sub">Max Chile (Vigente)</div>
+      </a>
+
+      <a href="https://www.disneyplus.com" class="focusable app-card disney" data-name="Disney+" tabindex="0">
+        <div class="app-icon-wrap">D+</div>
+        <div class="app-name">Disney+</div>
+        <div class="app-sub">Pendiente de probar</div>
+      </a>
+
+      <a href="https://www.primevideo.com" class="focusable app-card prime" data-name="Prime Video" tabindex="0">
+        <div class="app-icon-wrap">PV</div>
+        <div class="app-name">Prime Video</div>
+        <div class="app-sub">Pendiente de probar</div>
+      </a>
+
       <a href="https://pluto.tv" class="focusable app-card pluto" data-name="Pluto TV" tabindex="0">
         <div class="app-icon-wrap">★</div>
         <div class="app-name">Pluto TV</div>
-        <div class="app-sub">Canales Gratis</div>
+        <div class="app-sub">Canales Gratis Web</div>
       </a>
+    </div>
 
+    <!-- FILA 2 DE SERVICIOS -->
+    <div class="card-row" style="margin-top: 10px;">
       <a href="https://app.plex.tv" class="focusable app-card plex" data-name="Plex Web" tabindex="0">
         <div class="app-icon-wrap">◆</div>
         <div class="app-name">Plex Web</div>
-        <div class="app-sub">Cine y Series</div>
+        <div class="app-sub">Cine y Series Web</div>
+      </a>
+
+      <a href="https://tv.apple.com" class="focusable app-card apple" data-name="Apple TV+" tabindex="0">
+        <div class="app-icon-wrap" style="font-size: 20px; font-weight: 900;">TV+</div>
+        <div class="app-name">Apple TV+</div>
+        <div class="app-sub">Pendiente de probar</div>
+      </a>
+
+      <a href="https://www.paramountplus.com" class="focusable app-card paramount" data-name="Paramount+" tabindex="0">
+        <div class="app-icon-wrap">P+</div>
+        <div class="app-name">Paramount+</div>
+        <div class="app-sub">Pendiente de probar</div>
       </a>
 
       <a href="https://www.twitch.tv" class="focusable app-card twitch" data-name="Twitch TV" tabindex="0">
         <div class="app-icon-wrap">▲</div>
         <div class="app-name">Twitch TV</div>
-        <div class="app-sub">Directos</div>
+        <div class="app-sub">Directos Streaming</div>
       </a>
 
       <a href="https://www.google.com" class="focusable app-card google" data-name="Buscador Google" tabindex="0">
@@ -520,10 +571,10 @@
         <div class="app-sub">Buscador Web</div>
       </a>
 
-      <a href="https://www.accuweather.com/es/cl/temuco/56434/weather-forecast/56434" class="focusable app-card weather" data-name="El Tiempo" tabindex="0">
-        <div class="app-icon-wrap">⛅</div>
-        <div class="app-name">El Tiempo</div>
-        <div class="app-sub">Pronóstico Temuco</div>
+      <a href="test.html" class="focusable app-card" style="border-color: #00ff66;" data-name="Página Mínima Test" tabindex="0">
+        <div class="app-icon-wrap" style="background: #00aa44; font-size: 26px;">✓</div>
+        <div class="app-name" style="color: #00ff66;">Test Mínimo</div>
+        <div class="app-sub">Verificar Conexión</div>
       </a>
     </div>
 
