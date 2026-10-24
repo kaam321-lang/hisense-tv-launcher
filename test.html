@@ -130,26 +130,44 @@
     <div>5. Errores de Script: <span id="diag-err" class="val" style="color: #00ff66;">Ninguno registrado</span></div>
   </div>
 
-  <!-- 3. PRUEBA DE REPRODUCCIÓN BÁSICA DIRECTA (MP4 VERIFICADO CON FFPROBE) -->
+  <!-- 3. PRUEBA DE REPRODUCCIÓN BÁSICA DIRECTA (MP4 Y HLS) -->
   <div class="video-box">
-    <div class="diag-title" style="color: #ffaa00; border-color: #ffaa00;">Prueba de Reproducción Básica (MP4 Directo)</div>
+    <div class="diag-title" style="color: #ffaa00; border-color: #ffaa00;">Prueba de Reproducción Básica (MP4 Directo y HLS)</div>
     <div style="font-size: 18px; margin-bottom: 8px;">
       Estado del reproductor: <span id="video-status" class="val">Esperando inicio...</span>
     </div>
+    <div style="font-size: 16px; margin-bottom: 8px; color: #cbd5e1;">
+      Tiempo actual: <span id="video-time" class="val" style="color: #00f0ff;">0:00</span> / <span id="video-dur" class="val" style="color: #00f0ff;">0:00</span>
+    </div>
     
     <video id="test-video" controls playsinline webkit-playsinline preload="metadata">
-      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      <source id="video-source" src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
       Tu navegador no soporta la etiqueta video HTML5.
     </video>
-    <div style="margin-top: 10px; font-size: 15px; color: #a0aec0; line-height: 22px;">
-      <b>Archivo:</b> mov_bbb.mp4 | <b>Servidor:</b> W3Schools (HTTPS) | <b>Verificado con ffprobe:</b> H.264 Main Profile L1.2 (320x176, 25fps) + AAC-LC Stereo (48kHz, 160kbps).
+    <div id="video-info" style="margin-top: 10px; font-size: 15px; color: #a0aec0; line-height: 22px;">
+      <b>Archivo actual:</b> mov_bbb.mp4 | <b>Servidor:</b> W3Schools (HTTPS) | H.264 Main + AAC-LC.
     </div>
   </div>
 
-  <!-- 4. BOTONES DE ACCIÓN (CON NAVEGACIÓN ROBUSTA) -->
-  <div>
-    <button id="btn-play" class="btn" onclick="probarReproduccion()" autofocus tabindex="0">PROBAR REPRODUCIR VÍDEO</button>
-    <a id="btn-menu" href="index.html" class="btn" tabindex="0">IR AL MENÚ COMPLETO</a>
+  <!-- 4. BOTONES DE ACCIÓN PARA PRUEBAS TÉCNICAS CONTROLADAS -->
+  <div style="max-width: 900px; margin: 0 auto;">
+    <button id="btn-mp4" class="btn" onclick="probarMP4Candidata()" autofocus tabindex="0" style="display: block; width: 90%; margin: 8px auto;">
+      1. CARGAR MP4 CANDIDATA (El Robo del Siglo 720p)
+    </button>
+    <div style="margin: 8px auto; text-align: center;">
+      <button id="btn-pause" class="btn" onclick="togglePausa()" tabindex="0" style="font-size: 20px; padding: 10px 20px;">
+        2. PAUSAR / REANUDAR
+      </button>
+      <button id="btn-seek" class="btn" onclick="saltarMitad()" tabindex="0" style="font-size: 20px; padding: 10px 20px;">
+        3. SALTAR A LA MITAD (50%)
+      </button>
+    </div>
+    <button id="btn-hls" class="btn" onclick="probarHLS()" tabindex="0" style="display: block; width: 90%; margin: 8px auto; background: #00f0ff; color: #000;">
+      4. CARGAR CANAL HLS (13C En Vivo)
+    </button>
+    <a id="btn-menu" href="index.html" class="btn" tabindex="0" style="display: block; width: 90%; margin: 12px auto; font-size: 18px; padding: 10px; background: #1a2a4a; color: #fff; border-color: #2e416a;">
+      IR AL MENÚ COMPLETO
+    </a>
   </div>
 
   <script>
@@ -210,83 +228,189 @@
       }
     }
 
-    // 3. Manejo de eventos del reproductor de video sin certificar falsos positivos
+    // 3. Manejo de eventos del reproductor de video
     var vid = document.getElementById('test-video');
     var vStatus = document.getElementById('video-status');
-    if (vid && vStatus) {
+    var vTime = document.getElementById('video-time');
+    var vDur = document.getElementById('video-dur');
+    var vInfo = document.getElementById('video-info');
+
+    function fmtTime(s) {
+      if (!s || isNaN(s)) return '0:00';
+      var m = Math.floor(s / 60);
+      var sec = Math.floor(s % 60);
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    if (vid) {
+      vid.ontimeupdate = function() {
+        if (vTime) vTime.innerText = fmtTime(vid.currentTime);
+        if (vDur && vid.duration) vDur.innerText = fmtTime(vid.duration);
+      };
       vid.onplaying = function() {
-        vStatus.style.color = '#ffe600';
-        vStatus.innerText = 'El navegador emitió playing (observar imagen y sonido en pantalla)';
+        if (vStatus) {
+          vStatus.style.color = '#00ff66';
+          vStatus.innerText = 'El navegador emitió playing (observar imagen y sonido en pantalla)';
+        }
       };
       vid.onpause = function() {
-        vStatus.style.color = '#ffe600';
-        vStatus.innerText = 'Pausado';
+        if (vStatus) {
+          vStatus.style.color = '#ffe600';
+          vStatus.innerText = 'Pausado (en ' + fmtTime(vid.currentTime) + ')';
+        }
+      };
+      vid.onseeking = function() {
+        if (vStatus) {
+          vStatus.style.color = '#ffaa00';
+          vStatus.innerText = 'Saltando en el buffer a ' + fmtTime(vid.currentTime) + '...';
+        }
+      };
+      vid.onseeked = function() {
+        if (vStatus) {
+          vStatus.style.color = '#00f0ff';
+          vStatus.innerText = 'Salto completado en ' + fmtTime(vid.currentTime);
+        }
       };
       vid.onerror = function() {
-        vStatus.style.color = '#ff4444';
-        var code = vid.error ? vid.error.code : 'Desconocido';
-        var desc = 'Error HTML5 código ' + code;
-        if (code === 1) desc += ' (MEDIA_ERR_ABORTED)';
-        if (code === 2) desc += ' (MEDIA_ERR_NETWORK)';
-        if (code === 3) desc += ' (MEDIA_ERR_DECODE)';
-        if (code === 4) desc += ' (MEDIA_ERR_SRC_NOT_SUPPORTED)';
-        vStatus.innerText = desc;
+        if (vStatus) {
+          vStatus.style.color = '#ff4444';
+          var code = vid.error ? vid.error.code : 'Desconocido';
+          var desc = 'Error HTML5 código ' + code;
+          if (code === 1) desc += ' (MEDIA_ERR_ABORTED)';
+          if (code === 2) desc += ' (MEDIA_ERR_NETWORK)';
+          if (code === 3) desc += ' (MEDIA_ERR_DECODE)';
+          if (code === 4) desc += ' (MEDIA_ERR_SRC_NOT_SUPPORTED)';
+          vStatus.innerText = desc;
+        }
       };
       vid.onended = function() {
-        vStatus.style.color = '#00f0ff';
-        vStatus.innerText = 'Fin del vídeo alcanzado';
+        if (vStatus) {
+          vStatus.style.color = '#00f0ff';
+          vStatus.innerText = 'Fin del contenido alcanzado';
+        }
       };
     }
 
-    function probarReproduccion() {
-      if (vid) {
-        try {
-          if (vStatus) {
-            vStatus.style.color = '#00f0ff';
-            vStatus.innerText = 'Invocando vid.play()...';
-          }
-          var p = vid.play();
-          if (p && p.catch) {
-            p.catch(function(err) {
-              if (vStatus) {
-                vStatus.style.color = '#ff4444';
-                vStatus.innerText = 'Fallo en play(): ' + err;
-              }
-            });
-          }
-        } catch(e) {
+    function probarMP4Candidata() {
+      if (!vid) return;
+      var url = 'http://45.226.28.9:8085/cloud_2/El.robo.del.siglo.2020.720.lat.mp4';
+      if (vInfo) vInfo.innerHTML = '<b>Archivo actual:</b> El.robo.del.siglo.2020.720.lat.mp4 | <b>Formato:</b> MP4 H.264 1280x720 + AAC (Español Latino) | HTTP 206 Partial Content.';
+      if (vStatus) {
+        vStatus.style.color = '#00f0ff';
+        vStatus.innerText = 'Cargando MP4 candidata...';
+      }
+      vid.src = url;
+      vid.load();
+      var p = vid.play();
+      if (p && p.catch) {
+        p.catch(function(err) {
           if (vStatus) {
             vStatus.style.color = '#ff4444';
-            vStatus.innerText = 'Excepción al invocar play(): ' + e;
+            vStatus.innerText = 'Fallo en play(): ' + err;
           }
+        });
+      }
+    }
+
+    function togglePausa() {
+      if (!vid) return;
+      if (vid.paused) {
+        vid.play();
+      } else {
+        vid.pause();
+      }
+    }
+
+    function saltarMitad() {
+      if (!vid) return;
+      if (vid.duration && !isNaN(vid.duration)) {
+        var target = vid.duration / 2;
+        vid.currentTime = target;
+        if (vStatus) {
+          vStatus.style.color = '#ffaa00';
+          vStatus.innerText = 'Solicitando salto a mitad: ' + fmtTime(target);
+        }
+      } else {
+        // Si no hay duracion calculada, saltar +30 minutos (1800s)
+        vid.currentTime += 1800;
+        if (vStatus) {
+          vStatus.style.color = '#ffaa00';
+          vStatus.innerText = 'Saltando +30 minutos...';
         }
       }
     }
 
-    // 4. Soporte de teclas para el mando de la Hisense
+    function probarHLS() {
+      if (!vid) return;
+      var hlsUrl = 'https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8';
+      if (vInfo) vInfo.innerHTML = '<b>Archivo actual:</b> 13C En Vivo (DPS SSAI) | <b>Formato:</b> HLS Multi-bitrate H.264 + AAC.';
+      if (vStatus) {
+        vStatus.style.color = '#00f0ff';
+        vStatus.innerText = 'Cargando canal HLS...';
+      }
+      vid.src = hlsUrl;
+      vid.load();
+      var p = vid.play();
+      if (p && p.catch) {
+        p.catch(function(err) {
+          if (vStatus) {
+            vStatus.style.color = '#ff4444';
+            vStatus.innerText = 'Fallo en play HLS: ' + err;
+          }
+        });
+      }
+    }
+
+    // 4. Navegación por control remoto (D-Pad y Enter)
+    var navButtons = [
+      document.getElementById('btn-mp4'),
+      document.getElementById('btn-pause'),
+      document.getElementById('btn-seek'),
+      document.getElementById('btn-hls'),
+      document.getElementById('btn-menu')
+    ];
+    var curBtnIdx = 0;
+
+    function focusBtn(idx) {
+      if (idx < 0) idx = 0;
+      if (idx >= navButtons.length) idx = navButtons.length - 1;
+      curBtnIdx = idx;
+      if (navButtons[curBtnIdx]) {
+        navButtons[curBtnIdx].focus();
+      }
+    }
+
     document.onkeydown = function(e) {
       e = e || window.event;
       var code = e.keyCode || e.which;
+
+      // Flecha arriba (38)
+      if (code === 38) {
+        focusBtn(curBtnIdx - 1);
+        return false;
+      }
+      // Flecha abajo (40)
+      if (code === 40) {
+        focusBtn(curBtnIdx + 1);
+        return false;
+      }
+      // Flecha izquierda (37)
+      if (code === 37) {
+        focusBtn(curBtnIdx - 1);
+        return false;
+      }
+      // Flecha derecha (39)
+      if (code === 39) {
+        focusBtn(curBtnIdx + 1);
+        return false;
+      }
       // Enter / OK (13)
       if (code === 13) {
-        var active = document.activeElement;
-        if (active) {
-          if (active.id === 'btn-menu') {
-            window.location.href = active.href;
-            return false;
-          } else if (active.id === 'btn-play') {
-            probarReproduccion();
-            return false;
-          }
+        var act = document.activeElement;
+        if (act && act.click) {
+          act.click();
+          return false;
         }
-      }
-      // Flechas izquierda (37) / derecha (39)
-      if (code === 37) {
-        var btnPlay = document.getElementById('btn-play');
-        if (btnPlay) btnPlay.focus();
-      } else if (code === 39) {
-        var btnMenu = document.getElementById('btn-menu');
-        if (btnMenu) btnMenu.focus();
       }
     };
   </script>
