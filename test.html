@@ -151,20 +151,35 @@
 
   <!-- 4. BOTONES DE ACCIÓN PARA PRUEBAS TÉCNICAS CONTROLADAS -->
   <div style="max-width: 900px; margin: 0 auto;">
-    <button id="btn-mp4" class="btn" onclick="probarMP4Candidata()" autofocus tabindex="0" style="display: block; width: 90%; margin: 8px auto;">
-      1. CARGAR MP4 CANDIDATA (El Robo del Siglo 720p)
+    <!-- AISLAMIENTO DE CONTENIDO MIXTO: NAVEGACIÓN DIRECTA SIN IFRAME NI FETCH -->
+    <a id="btn-direct-mp4" href="http://45.226.28.9:8085/cloud_2/El.robo.del.siglo.2020.720.lat.mp4" class="btn" style="background: #22c55e; color: #000; font-size: 20px; display: block; width: 90%; margin: 8px auto;" tabindex="0" autofocus>
+      1. ABRIR MP4 DIRECTAMENTE (Navegación normal en misma pestaña, sin iframe ni JavaScript)
+    </a>
+
+    <!-- ALTERNATIVA HTTPS VERIFICADA CON CERTIFICADO TLS VÁLIDO -->
+    <button id="btn-mp4-https" class="btn" onclick="probarMP4Https()" tabindex="0" style="background: #eab308; color: #000; font-size: 20px; display: block; width: 90%; margin: 8px auto;">
+      2. PROBAR MP4 VÍA HTTPS VERIFICADO (Archive.org, TLS verificado en PC)
     </button>
+
+    <!-- INCRUSTACIÓN HTTP EN REPRODUCTOR (SUJETO A RESTRICCIÓN DE CONTENIDO MIXTO) -->
+    <button id="btn-mp4-http" class="btn" onclick="probarMP4Candidata()" tabindex="0" style="font-size: 18px; display: block; width: 90%; margin: 8px auto;">
+      3. PROBAR MP4 INCRUSTADO EN VIDEO (HTTP 45.226.28.9)
+    </button>
+
     <div style="margin: 8px auto; text-align: center;">
       <button id="btn-pause" class="btn" onclick="togglePausa()" tabindex="0" style="font-size: 20px; padding: 10px 20px;">
-        2. PAUSAR / REANUDAR
+        PAUSAR / REANUDAR
       </button>
       <button id="btn-seek" class="btn" onclick="saltarMitad()" tabindex="0" style="font-size: 20px; padding: 10px 20px;">
-        3. SALTAR A LA MITAD (50%)
+        SALTAR A LA MITAD (50%)
       </button>
     </div>
-    <button id="btn-hls" class="btn" onclick="probarHLS()" tabindex="0" style="display: block; width: 90%; margin: 8px auto; background: #00f0ff; color: #000;">
-      4. CARGAR CANAL HLS (13C En Vivo)
+
+    <!-- PRUEBA HLS MEDIANTE VIDEO.SRC -->
+    <button id="btn-hls" class="btn" onclick="probarHLS()" tabindex="0" style="display: block; width: 90%; margin: 8px auto; background: #00f0ff; color: #000; font-size: 20px;">
+      4. PROBAR CANAL HLS MEDIANTE VIDEO.SRC (13C En Vivo)
     </button>
+
     <a id="btn-menu" href="index.html" class="btn" tabindex="0" style="display: block; width: 90%; margin: 12px auto; font-size: 18px; padding: 10px; background: #1a2a4a; color: #fff; border-color: #2e416a;">
       IR AL MENÚ COMPLETO
     </a>
@@ -291,13 +306,35 @@
       };
     }
 
+    function probarMP4Https() {
+      if (!vid) return;
+      var url = 'https://archive.org/download/31-minutos-calurosa-navidad-2025/31%20Minutos_%20Calurosa%20Navidad%20%282025%29.mp4';
+      if (vInfo) vInfo.innerHTML = '<b>Archivo:</b> 31 Minutos (2025) | <b>Servidor:</b> Archive.org (HTTPS con certificado TLS válido verificado en PC) | H.264 + AAC.';
+      if (vStatus) {
+        vStatus.style.color = '#00f0ff';
+        vStatus.innerText = 'Cargando MP4 vía HTTPS...';
+      }
+      vid.src = url;
+      vid.load();
+      var p = vid.play();
+      if (p && p.catch) {
+        p.catch(function(err) {
+          if (vStatus) {
+            vStatus.style.color = '#ff4444';
+            vStatus.innerText = 'Fallo en play(): ' + err;
+          }
+        });
+      }
+    }
+
     function probarMP4Candidata() {
       if (!vid) return;
       var url = 'http://45.226.28.9:8085/cloud_2/El.robo.del.siglo.2020.720.lat.mp4';
-      if (vInfo) vInfo.innerHTML = '<b>Archivo actual:</b> El.robo.del.siglo.2020.720.lat.mp4 | <b>Formato:</b> MP4 H.264 1280x720 + AAC (Español Latino) | HTTP 206 Partial Content.';
+      var mixedWarn = (window.location.protocol === 'https:') ? '<br><span style="color:#ffaa00;">Aviso: La página está en HTTPS y el vídeo en HTTP sin cifrar. Si el navegador bloquea contenido mixto, usa el botón verde 1 de arriba (navegación directa).</span>' : '';
+      if (vInfo) vInfo.innerHTML = '<b>Archivo:</b> El.robo.del.siglo.2020.720.lat.mp4 | <b>Servidor:</b> HTTP 45.226.28.9:8085 | H.264 1280x720 + AAC (Español Latino verificado en PC).' + mixedWarn;
       if (vStatus) {
         vStatus.style.color = '#00f0ff';
-        vStatus.innerText = 'Cargando MP4 candidata...';
+        vStatus.innerText = 'Cargando MP4 candidata vía HTTP...';
       }
       vid.src = url;
       vid.load();
@@ -331,7 +368,6 @@
           vStatus.innerText = 'Solicitando salto a mitad: ' + fmtTime(target);
         }
       } else {
-        // Si no hay duracion calculada, saltar +30 minutos (1800s)
         vid.currentTime += 1800;
         if (vStatus) {
           vStatus.style.color = '#ffaa00';
@@ -346,7 +382,7 @@
       if (vInfo) vInfo.innerHTML = '<b>Archivo actual:</b> 13C En Vivo (DPS SSAI) | <b>Formato:</b> HLS Multi-bitrate H.264 + AAC.';
       if (vStatus) {
         vStatus.style.color = '#00f0ff';
-        vStatus.innerText = 'Cargando canal HLS...';
+        vStatus.innerText = 'Cargando canal HLS mediante video.src...';
       }
       vid.src = hlsUrl;
       vid.load();
@@ -355,7 +391,7 @@
         p.catch(function(err) {
           if (vStatus) {
             vStatus.style.color = '#ff4444';
-            vStatus.innerText = 'Fallo en play HLS: ' + err;
+            vStatus.innerText = 'Fallo de reproducción nativa HLS vía <video src>: ' + err;
           }
         });
       }
@@ -363,7 +399,9 @@
 
     // 4. Navegación por control remoto (D-Pad y Enter)
     var navButtons = [
-      document.getElementById('btn-mp4'),
+      document.getElementById('btn-direct-mp4'),
+      document.getElementById('btn-mp4-https'),
+      document.getElementById('btn-mp4-http'),
       document.getElementById('btn-pause'),
       document.getElementById('btn-seek'),
       document.getElementById('btn-hls'),
@@ -407,9 +445,14 @@
       // Enter / OK (13)
       if (code === 13) {
         var act = document.activeElement;
-        if (act && act.click) {
-          act.click();
-          return false;
+        if (act) {
+          if (act.tagName === 'A') {
+            window.location.href = act.href;
+            return false;
+          } else if (act.click) {
+            act.click();
+            return false;
+          }
         }
       }
     };
