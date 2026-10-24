@@ -455,18 +455,18 @@
 </head>
 <body>
 
-  <!-- BANNER SUPERIOR DE ESTADO Y TELEMETRÍA (HISENSE VIDAA v3.0) -->
+  <!-- BANNER SUPERIOR DE ESTADO Y TELEMETRÍA (HISENSE VIDAA v3.2-QA) -->
   <div id="top-status-bar" class="clearfix">
     <div class="banner-left">
-      <span class="banner-title">SMART TV LAUNCHER HISENSE VIDAA v3.0</span>
-      <span class="badge-active">● ACTIVO</span>
+      <span class="banner-title">HISENSE LAUNCHER v3.2-QA</span>
+      <span class="badge-active" style="background: #2a3a5a; color: #ffe600; border: 1px solid #ffe600;">REPRODUCCIÓN NO VALIDADA</span>
     </div>
     <div class="banner-right">
       <span>TECLA: <span id="debug-key">--</span></span>
       <span class="banner-sep">|</span>
-      <span>SELECCIÓN: <span id="debug-name">YouTube TV</span></span>
+      <span>SELECCIÓN: <span id="debug-name">Netflix</span></span>
       <span class="banner-sep">|</span>
-      <span>ESTADO: <span id="debug-video">Listo</span></span>
+      <span>ESTADO VÍDEO: <span id="debug-video">Listo</span></span>
     </div>
   </div>
 
@@ -474,7 +474,7 @@
   <header class="clearfix">
     <div class="header-col-left">
       <div class="brand-title">HISENSE <span>VIDAA</span></div>
-      <div class="brand-sub">Smart TV 10-Foot Edition • Chile 2026</div>
+      <div class="brand-sub">Smart TV 10-Foot Edition • Build v3.2-QA (2026-10-23)</div>
     </div>
 
     <div class="header-col-center">
@@ -983,9 +983,22 @@
         ov.style.display = 'block';
         ov.className = 'active';
       }
-      if (dVid) dVid.innerText = "Reproduciendo: " + title.slice(0, 15);
+      if (dVid) dVid.innerText = "Cargando: " + title.slice(0, 15);
 
       if (vid) {
+        vid.onplaying = function() {
+          if (dVid) dVid.innerText = "El navegador emitió playing";
+        };
+        vid.onerror = function() {
+          var code = vid.error ? vid.error.code : 'desconocido';
+          var desc = "Error código " + code;
+          if (code === 1) desc += " (Abortado)";
+          if (code === 2) desc += " (Red/CORS)";
+          if (code === 3) desc += " (Decodificación)";
+          if (code === 4) desc += " (Formato no soportado)";
+          if (dVid) dVid.innerText = desc;
+          if (tit) tit.innerText = "FALLO: " + desc + " - " + title;
+        };
         try {
           vid.pause();
           vid.src = url;
@@ -993,7 +1006,7 @@
           var playPromise = vid.play();
           if (playPromise && playPromise.catch) {
             playPromise.catch(function(err) {
-              if (dVid) dVid.innerText = "Info: " + err;
+              if (dVid) dVid.innerText = "Fallo en play(): " + err;
             });
           }
         } catch(e) {
@@ -1063,21 +1076,46 @@
       
       // Enter / OK (13)
       else if (code === 13) {
+        if (e.preventDefault) e.preventDefault();
         if (currentFocus) {
           if (currentFocus.id === 'player-exit-btn') {
             closePlayer();
-          } else {
+            return false;
+          }
+          // Si es un enlace <a> directo, navegar forzosamente (corrige fallo de click() en TV)
+          if (currentFocus.tagName && currentFocus.tagName.toLowerCase() === 'a' && currentFocus.href) {
+            window.location.href = currentFocus.href;
+            return false;
+          }
+          // Si es una tarjeta con data-url (vídeo o canal)
+          var dUrl = currentFocus.getAttribute('data-url');
+          if (dUrl) {
+            var dName = currentFocus.getAttribute('data-name') || 'Vídeo';
+            playVideo(dUrl, dName);
+            return false;
+          }
+          // Fallback a onclick o click
+          if (typeof currentFocus.onclick === 'function') {
+            currentFocus.onclick();
+            return false;
+          }
+          if (currentFocus.click) {
             currentFocus.click();
           }
         }
-        return true;
+        return false;
       }
 
-      // Teclas Atrás / Volver / Exit (8, 27, 461, 10009, 10182, 4, 219)
-      else if (code === 8 || code === 27 || code === 461 || code === 10009 || code === 10182 || code === 4 || code === 219) {
-        if (e.preventDefault) e.preventDefault();
-        closePlayer();
-        return false;
+      // Teclas Atrás / Volver / Exit (8, 27, 461, 10009, 10182, 4, 219, 166, 65396)
+      else if (code === 8 || code === 27 || code === 461 || code === 10009 || code === 10182 || code === 4 || code === 219 || code === 166 || code === 65396) {
+        var ov = document.getElementById('player-overlay');
+        var isPlayerActive = ov && (ov.style.display === 'block' || ov.className.indexOf('active') !== -1);
+        if (isPlayerActive) {
+          if (e.preventDefault) e.preventDefault();
+          closePlayer();
+          return false;
+        }
+        return true;
       }
 
       // Teclado numérico 1-9 para selección rápida de canales
@@ -1085,7 +1123,14 @@
         var num = code - 48; // 1 to 9
         var channels = document.getElementsByClassName ? document.getElementsByClassName('channel-card') : [];
         if (channels && channels.length >= num) {
-          channels[num - 1].click();
+          var targetCh = channels[num - 1];
+          var chUrl = targetCh.getAttribute('data-url');
+          var chName = targetCh.getAttribute('data-name') || ('Canal ' + num);
+          if (chUrl) {
+            playVideo(chUrl, chName);
+          } else if (targetCh.click) {
+            targetCh.click();
+          }
         }
       }
     };

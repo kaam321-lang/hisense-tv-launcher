@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prueba de Conexión y Diagnóstico Hisense TV</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Diagnóstico y Prueba Mínima Hisense TV - v3.2-QA</title>
   <style>
     * {
       box-sizing: border-box;
@@ -15,16 +18,27 @@
       color: #ffffff;
       font-family: Arial, Helvetica, sans-serif;
       text-align: center;
-      padding: 30px 20px;
+      padding: 25px 20px;
+    }
+    .version-tag {
+      background: #112244;
+      border: 1px solid #00f0ff;
+      color: #00f0ff;
+      font-size: 15px;
+      font-weight: bold;
+      padding: 6px 14px;
+      display: inline-block;
+      margin-bottom: 15px;
+      border-radius: 4px;
     }
     .banner {
       background: #00cc44;
       color: #000000;
       font-size: 38px;
       font-weight: 900;
-      padding: 20px;
+      padding: 18px;
       border: 4px solid #ffffff;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       display: inline-block;
       width: 90%;
       letter-spacing: 1px;
@@ -33,20 +47,20 @@
       background: #0b1c36;
       border: 3px solid #00f0ff;
       border-radius: 8px;
-      padding: 20px;
+      padding: 18px;
       width: 90%;
-      margin: 0 auto 25px auto;
+      margin: 0 auto 20px auto;
       text-align: left;
-      font-size: 20px;
-      line-height: 32px;
+      font-size: 19px;
+      line-height: 30px;
     }
     .diag-title {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
       color: #00f0ff;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       border-bottom: 2px solid #00f0ff;
-      padding-bottom: 6px;
+      padding-bottom: 5px;
     }
     .val {
       color: #ffe600;
@@ -61,9 +75,9 @@
       background: #0b1c36;
       border: 3px solid #ffaa00;
       border-radius: 8px;
-      padding: 20px;
+      padding: 18px;
       width: 90%;
-      margin: 0 auto 25px auto;
+      margin: 0 auto 20px auto;
       text-align: center;
     }
     video {
@@ -72,19 +86,19 @@
       height: 360px;
       background: #000000;
       border: 3px solid #ffffff;
-      margin-top: 15px;
+      margin-top: 12px;
     }
     .btn {
       display: inline-block;
       background: #ffe600;
       color: #000000;
-      font-size: 26px;
+      font-size: 24px;
       font-weight: bold;
-      padding: 16px 36px;
+      padding: 14px 32px;
       text-decoration: none;
       border: 4px solid #ffffff;
       border-radius: 8px;
-      margin: 10px;
+      margin: 8px;
       cursor: pointer;
     }
     .btn:hover, .btn:focus {
@@ -96,25 +110,30 @@
 </head>
 <body>
 
-  <!-- 1. COMPROBACIÓN VISUAL PURA ESTÁTICA (SIN JS) -->
+  <!-- ETIQUETA VISIBLE DE VERSIÓN PUBLICADA -->
+  <div class="version-tag">
+    PUBLICACIÓN: v3.2-QA | ESTADO: REPRODUCCIÓN NO VALIDADA EN TELE | SERVIDOR: GitHub Pages
+  </div>
+
+  <!-- 1. COMPROBACIÓN VISUAL PURA ESTÁTICA (SIN JAVASCRIPT) -->
   <div class="banner">
     LA TELE CARGÓ EL SITIO
   </div>
 
   <!-- 2. DIAGNÓSTICO EN PANTALLA DEL NAVEGADOR REAL -->
   <div class="diag-box">
-    <div class="diag-title">Diagnóstico del Navegador de la Tele</div>
-    <div>1. Dirección Servidor: <span class="val">https://kaam321-lang.github.io/hisense-tv-launcher/</span></div>
-    <div>2. User-Agent detectado: <span id="diag-ua" class="val">Detectando con JavaScript...</span></div>
+    <div class="diag-title">Diagnóstico en Pantalla del Navegador Real</div>
+    <div>1. URL servida: <span class="val">https://kaam321-lang.github.io/hisense-tv-launcher/test.html</span></div>
+    <div>2. User-Agent detectado: <span id="diag-ua" class="val">Cargando con JavaScript...</span></div>
     <div>3. Resolución y Viewport: <span id="diag-res" class="val">Detectando...</span></div>
-    <div>4. Soporte Video HTML5 MP4 (H.264): <span id="diag-mp4" class="val">Evaluando...</span></div>
+    <div>4. Capacidad declarada MP4 (H.264 Main/AAC): <span id="diag-mp4" class="val">Evaluando canPlayType...</span></div>
     <div>5. Errores de Script: <span id="diag-err" class="val" style="color: #00ff66;">Ninguno registrado</span></div>
   </div>
 
-  <!-- 3. PRUEBA DE REPRODUCCIÓN BÁSICA DIRECTA (H.264 MP4) -->
+  <!-- 3. PRUEBA DE REPRODUCCIÓN BÁSICA DIRECTA (MP4 VERIFICADO CON FFPROBE) -->
   <div class="video-box">
     <div class="diag-title" style="color: #ffaa00; border-color: #ffaa00;">Prueba de Reproducción Básica (MP4 Directo)</div>
-    <div style="font-size: 18px; margin-bottom: 10px;">
+    <div style="font-size: 18px; margin-bottom: 8px;">
       Estado del reproductor: <span id="video-status" class="val">Esperando inicio...</span>
     </div>
     
@@ -122,19 +141,19 @@
       <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
       Tu navegador no soporta la etiqueta video HTML5.
     </video>
-    <div style="margin-top: 10px; font-size: 16px; color: #a0aec0;">
-      Formato: MP4 / Vídeo: H.264 Baseline / Audio: AAC Stereo / Servidor: W3C HTTPS
+    <div style="margin-top: 10px; font-size: 15px; color: #a0aec0; line-height: 22px;">
+      <b>Archivo:</b> mov_bbb.mp4 | <b>Servidor:</b> W3Schools (HTTPS) | <b>Verificado con ffprobe:</b> H.264 Main Profile L1.2 (320x176, 25fps) + AAC-LC Stereo (48kHz, 160kbps).
     </div>
   </div>
 
-  <!-- 4. BOTONES DE ACCIÓN -->
+  <!-- 4. BOTONES DE ACCIÓN (CON NAVEGACIÓN ROBUSTA) -->
   <div>
-    <button class="btn" onclick="probarReproduccion()" autofocus>PROBAR REPRODUCIR VÍDEO</button>
-    <a href="index.html" class="btn">IR AL MENÚ COMPLETO</a>
+    <button id="btn-play" class="btn" onclick="probarReproduccion()" autofocus tabindex="0">PROBAR REPRODUCIR VÍDEO</button>
+    <a id="btn-menu" href="index.html" class="btn" tabindex="0">IR AL MENÚ COMPLETO</a>
   </div>
 
   <script>
-    // Registro global de errores en pantalla
+    // 1. Registro de errores en pantalla (sin suponer consola)
     window.onerror = function(msg, url, line) {
       var errEl = document.getElementById('diag-err');
       if (errEl) {
@@ -144,62 +163,94 @@
       return false;
     };
 
-    // Lectura de capacidades
+    // 2. Lectura estricta de capacidades
     try {
       var uaEl = document.getElementById('diag-ua');
-      if (uaEl) uaEl.innerText = navigator.userAgent;
+      if (uaEl) uaEl.innerText = navigator.userAgent || 'No reportado por el navegador';
 
       var resEl = document.getElementById('diag-res');
       if (resEl) {
-        resEl.innerText = window.innerWidth + 'x' + window.innerHeight + ' (Pantalla: ' + window.screen.width + 'x' + window.screen.height + ')';
+        var w = window.innerWidth || document.documentElement.clientWidth || 0;
+        var h = window.innerHeight || document.documentElement.clientHeight || 0;
+        var sw = window.screen ? window.screen.width : 0;
+        var sh = window.screen ? window.screen.height : 0;
+        resEl.innerText = w + 'x' + h + ' (Pantalla física: ' + sw + 'x' + sh + ')';
       }
 
+      // canPlayType estricto: sin falsos positivos
       var mp4El = document.getElementById('diag-mp4');
       if (mp4El) {
         var v = document.createElement('video');
-        var support = v && v.canPlayType ? v.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') : 'No soportado';
-        mp4El.innerText = support ? ('Soportado (' + support + ')') : 'NO soportado';
+        if (!v || typeof v.canPlayType !== 'function') {
+          mp4El.innerText = 'API no disponible';
+          mp4El.style.color = '#ffaa00';
+        } else {
+          // Evaluar códec exacto extraído con ffprobe: H.264 Main Profile + AAC LC
+          var resExact = v.canPlayType('video/mp4; codecs="avc1.4d400c, mp4a.40.2"');
+          if (resExact === 'probably' || resExact === 'maybe') {
+            mp4El.innerText = 'Declarado: ' + resExact + ' (capacidad declarada, pendiente de reproducción real)';
+            mp4El.style.color = '#ffe600';
+          } else {
+            var resGen = v.canPlayType('video/mp4');
+            if (resGen === 'probably' || resGen === 'maybe') {
+              mp4El.innerText = 'Declarado: ' + resGen + ' (genérico video/mp4, pendiente de reproducción real)';
+              mp4El.style.color = '#ffe600';
+            } else {
+              mp4El.innerText = 'No declara soporte';
+              mp4El.style.color = '#ff4444';
+            }
+          }
+        }
       }
     } catch(e) {
       var errEl = document.getElementById('diag-err');
       if (errEl) {
         errEl.className = 'error-val';
-        errEl.innerText = 'Excepción en diagnóstico: ' + e;
+        errEl.innerText = 'Excepción al obtener telemetría: ' + e;
       }
     }
 
-    // Monitoreo de eventos de video
+    // 3. Manejo de eventos del reproductor de video sin certificar falsos positivos
     var vid = document.getElementById('test-video');
     var vStatus = document.getElementById('video-status');
     if (vid && vStatus) {
       vid.onplaying = function() {
-        vStatus.style.color = '#00ff66';
-        vStatus.innerText = 'REPRODUCIENDO CORRECTAMENTE (Imagen y Sonido activos)';
+        vStatus.style.color = '#ffe600';
+        vStatus.innerText = 'El navegador emitió playing (observar imagen y sonido en pantalla)';
       };
       vid.onpause = function() {
         vStatus.style.color = '#ffe600';
-        vStatus.innerText = 'PAUSADO';
+        vStatus.innerText = 'Pausado';
       };
       vid.onerror = function() {
         vStatus.style.color = '#ff4444';
-        var errCode = vid.error ? vid.error.code : 'Desconocido';
-        vStatus.innerText = 'ERROR DE REPRODUCCIÓN (Código de error HTML5: ' + errCode + ')';
+        var code = vid.error ? vid.error.code : 'Desconocido';
+        var desc = 'Error HTML5 código ' + code;
+        if (code === 1) desc += ' (MEDIA_ERR_ABORTED)';
+        if (code === 2) desc += ' (MEDIA_ERR_NETWORK)';
+        if (code === 3) desc += ' (MEDIA_ERR_DECODE)';
+        if (code === 4) desc += ' (MEDIA_ERR_SRC_NOT_SUPPORTED)';
+        vStatus.innerText = desc;
       };
       vid.onended = function() {
         vStatus.style.color = '#00f0ff';
-        vStatus.innerText = 'REPRODUCCIÓN COMPLETADA';
+        vStatus.innerText = 'Fin del vídeo alcanzado';
       };
     }
 
     function probarReproduccion() {
       if (vid) {
         try {
+          if (vStatus) {
+            vStatus.style.color = '#00f0ff';
+            vStatus.innerText = 'Invocando vid.play()...';
+          }
           var p = vid.play();
           if (p && p.catch) {
             p.catch(function(err) {
               if (vStatus) {
                 vStatus.style.color = '#ff4444';
-                vStatus.innerText = 'Fallo al iniciar play(): ' + err;
+                vStatus.innerText = 'Fallo en play(): ' + err;
               }
             });
           }
@@ -211,6 +262,33 @@
         }
       }
     }
+
+    // 4. Soporte de teclas para el mando de la Hisense
+    document.onkeydown = function(e) {
+      e = e || window.event;
+      var code = e.keyCode || e.which;
+      // Enter / OK (13)
+      if (code === 13) {
+        var active = document.activeElement;
+        if (active) {
+          if (active.id === 'btn-menu') {
+            window.location.href = active.href;
+            return false;
+          } else if (active.id === 'btn-play') {
+            probarReproduccion();
+            return false;
+          }
+        }
+      }
+      // Flechas izquierda (37) / derecha (39)
+      if (code === 37) {
+        var btnPlay = document.getElementById('btn-play');
+        if (btnPlay) btnPlay.focus();
+      } else if (code === 39) {
+        var btnMenu = document.getElementById('btn-menu');
+        if (btnMenu) btnMenu.focus();
+      }
+    };
   </script>
 </body>
 </html>
