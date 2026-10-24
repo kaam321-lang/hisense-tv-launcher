@@ -2,42 +2,89 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Prueba de Conexión Hisense TV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba de Conexión y Diagnóstico Hisense TV</title>
   <style>
-    body {
-      background: #001a33;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px 20px;
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #001428;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+      padding: 30px 20px;
     }
     .banner {
       background: #00cc44;
       color: #000000;
-      font-size: 42px;
-      font-weight: bold;
-      padding: 25px;
+      font-size: 38px;
+      font-weight: 900;
+      padding: 20px;
       border: 4px solid #ffffff;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       display: inline-block;
-      width: 80%;
+      width: 90%;
+      letter-spacing: 1px;
     }
-    .info {
-      font-size: 26px;
+    .diag-box {
+      background: #0b1c36;
+      border: 3px solid #00f0ff;
+      border-radius: 8px;
+      padding: 20px;
+      width: 90%;
+      margin: 0 auto 25px auto;
+      text-align: left;
+      font-size: 20px;
+      line-height: 32px;
+    }
+    .diag-title {
+      font-size: 24px;
+      font-weight: bold;
       color: #00f0ff;
-      margin: 20px 0;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #00f0ff;
+      padding-bottom: 6px;
+    }
+    .val {
+      color: #ffe600;
+      font-weight: bold;
+      word-break: break-all;
+    }
+    .error-val {
+      color: #ff4444;
+      font-weight: bold;
+    }
+    .video-box {
+      background: #0b1c36;
+      border: 3px solid #ffaa00;
+      border-radius: 8px;
+      padding: 20px;
+      width: 90%;
+      margin: 0 auto 25px auto;
+      text-align: center;
+    }
+    video {
+      width: 640px;
+      max-width: 95%;
+      height: 360px;
+      background: #000000;
+      border: 3px solid #ffffff;
+      margin-top: 15px;
     }
     .btn {
       display: inline-block;
       background: #ffe600;
       color: #000000;
-      font-size: 30px;
+      font-size: 26px;
       font-weight: bold;
-      padding: 18px 40px;
+      padding: 16px 36px;
       text-decoration: none;
       border: 4px solid #ffffff;
-      margin-top: 30px;
+      border-radius: 8px;
+      margin: 10px;
       cursor: pointer;
     }
     .btn:hover, .btn:focus {
@@ -48,18 +95,122 @@
   </style>
 </head>
 <body>
+
+  <!-- 1. COMPROBACIÓN VISUAL PURA ESTÁTICA (SIN JS) -->
   <div class="banner">
     LA TELE CARGÓ EL SITIO
   </div>
-  <div class="info">
-    Conexión directa confirmada a: kaam321-lang.github.io
+
+  <!-- 2. DIAGNÓSTICO EN PANTALLA DEL NAVEGADOR REAL -->
+  <div class="diag-box">
+    <div class="diag-title">Diagnóstico del Navegador de la Tele</div>
+    <div>1. Dirección Servidor: <span class="val">https://kaam321-lang.github.io/hisense-tv-launcher/</span></div>
+    <div>2. User-Agent detectado: <span id="diag-ua" class="val">Detectando con JavaScript...</span></div>
+    <div>3. Resolución y Viewport: <span id="diag-res" class="val">Detectando...</span></div>
+    <div>4. Soporte Video HTML5 MP4 (H.264): <span id="diag-mp4" class="val">Evaluando...</span></div>
+    <div>5. Errores de Script: <span id="diag-err" class="val" style="color: #00ff66;">Ninguno registrado</span></div>
   </div>
-  <div class="info" style="color: #ffffff; font-size: 22px;">
-    Esta página no usa JavaScript ni librerías externas. Si estás leyendo esto en tu Hisense, el navegador nativo tiene acceso completo a internet y a nuestro servidor.
+
+  <!-- 3. PRUEBA DE REPRODUCCIÓN BÁSICA DIRECTA (H.264 MP4) -->
+  <div class="video-box">
+    <div class="diag-title" style="color: #ffaa00; border-color: #ffaa00;">Prueba de Reproducción Básica (MP4 Directo)</div>
+    <div style="font-size: 18px; margin-bottom: 10px;">
+      Estado del reproductor: <span id="video-status" class="val">Esperando inicio...</span>
+    </div>
+    
+    <video id="test-video" controls playsinline webkit-playsinline preload="metadata">
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      Tu navegador no soporta la etiqueta video HTML5.
+    </video>
+    <div style="margin-top: 10px; font-size: 16px; color: #a0aec0;">
+      Formato: MP4 / Vídeo: H.264 Baseline / Audio: AAC Stereo / Servidor: W3C HTTPS
+    </div>
   </div>
-  <br>
-  <a href="index.html" class="btn" autofocus>
-    IR AL MENÚ PRINCIPAL
-  </a>
+
+  <!-- 4. BOTONES DE ACCIÓN -->
+  <div>
+    <button class="btn" onclick="probarReproduccion()" autofocus>PROBAR REPRODUCIR VÍDEO</button>
+    <a href="index.html" class="btn">IR AL MENÚ COMPLETO</a>
+  </div>
+
+  <script>
+    // Registro global de errores en pantalla
+    window.onerror = function(msg, url, line) {
+      var errEl = document.getElementById('diag-err');
+      if (errEl) {
+        errEl.className = 'error-val';
+        errEl.innerHTML = 'Error en línea ' + line + ': ' + msg;
+      }
+      return false;
+    };
+
+    // Lectura de capacidades
+    try {
+      var uaEl = document.getElementById('diag-ua');
+      if (uaEl) uaEl.innerText = navigator.userAgent;
+
+      var resEl = document.getElementById('diag-res');
+      if (resEl) {
+        resEl.innerText = window.innerWidth + 'x' + window.innerHeight + ' (Pantalla: ' + window.screen.width + 'x' + window.screen.height + ')';
+      }
+
+      var mp4El = document.getElementById('diag-mp4');
+      if (mp4El) {
+        var v = document.createElement('video');
+        var support = v && v.canPlayType ? v.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') : 'No soportado';
+        mp4El.innerText = support ? ('Soportado (' + support + ')') : 'NO soportado';
+      }
+    } catch(e) {
+      var errEl = document.getElementById('diag-err');
+      if (errEl) {
+        errEl.className = 'error-val';
+        errEl.innerText = 'Excepción en diagnóstico: ' + e;
+      }
+    }
+
+    // Monitoreo de eventos de video
+    var vid = document.getElementById('test-video');
+    var vStatus = document.getElementById('video-status');
+    if (vid && vStatus) {
+      vid.onplaying = function() {
+        vStatus.style.color = '#00ff66';
+        vStatus.innerText = 'REPRODUCIENDO CORRECTAMENTE (Imagen y Sonido activos)';
+      };
+      vid.onpause = function() {
+        vStatus.style.color = '#ffe600';
+        vStatus.innerText = 'PAUSADO';
+      };
+      vid.onerror = function() {
+        vStatus.style.color = '#ff4444';
+        var errCode = vid.error ? vid.error.code : 'Desconocido';
+        vStatus.innerText = 'ERROR DE REPRODUCCIÓN (Código de error HTML5: ' + errCode + ')';
+      };
+      vid.onended = function() {
+        vStatus.style.color = '#00f0ff';
+        vStatus.innerText = 'REPRODUCCIÓN COMPLETADA';
+      };
+    }
+
+    function probarReproduccion() {
+      if (vid) {
+        try {
+          var p = vid.play();
+          if (p && p.catch) {
+            p.catch(function(err) {
+              if (vStatus) {
+                vStatus.style.color = '#ff4444';
+                vStatus.innerText = 'Fallo al iniciar play(): ' + err;
+              }
+            });
+          }
+        } catch(e) {
+          if (vStatus) {
+            vStatus.style.color = '#ff4444';
+            vStatus.innerText = 'Excepción al invocar play(): ' + e;
+          }
+        }
+      }
+    }
+  </script>
 </body>
 </html>
