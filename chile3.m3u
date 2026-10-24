@@ -1,0 +1,7 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="13C.cl" tvg-name="13C Cultura" tvg-logo="https://i.imgur.com/8QpY5Qk.png" group-title="Chile",13C Cultura
+https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8
+#EXTINF:-1 tvg-id="13Festival.cl" tvg-name="13 Festival" tvg-logo="https://i.imgur.com/kP8U1o2.png" group-title="Chile",13 Festival
+https://origin.dpsgo.com/ssai/event/Nftd0fM2SXasfDlRphvUsg/master.m3u8
+#EXTINF:-1 tvg-id="ADNTV.cl" tvg-name="ADN TV" tvg-logo="https://i.imgur.com/J3y5K0E.png" group-title="Chile",ADN TV Chile
+https://redirector.rudo.video/hls-video/931b584451fa6dd1313ee66efbfd5802e3f3bcea/adntv/adntv.smil/playlist.m3u8
