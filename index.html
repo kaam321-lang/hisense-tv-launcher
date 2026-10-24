@@ -403,7 +403,7 @@
       padding: 14px 30px;
       border-radius: 8px;
       cursor: pointer;
-      z-index: 10;
+      z-index: 100;
     }
 
     .player-exit-btn:hover,
@@ -542,10 +542,10 @@
         <div class="video-badge">Cine HD MP4</div>
       </div>
 
-      <div class="focusable video-card" onclick="playVideo('https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4', 'Test 3: Big Buck Bunny 720p HD (Película Completa)')" data-url="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4" data-name="Test 3: Big Buck Bunny Completo" tabindex="0">
+      <div class="focusable video-card" onclick="playVideo('https://archive.org/download/Tears-of-Steel/tears_of_steel_720p.mp4', 'Test 3: Tears of Steel HD (MP4)')" data-url="https://archive.org/download/Tears-of-Steel/tears_of_steel_720p.mp4" data-name="Test 3: Tears of Steel" tabindex="0">
         <div class="video-num">VÍDEO TEST 3</div>
-        <div class="video-name">Película Completa BBB</div>
-        <div class="video-badge">720p H.264 Directo</div>
+        <div class="video-name">Tears of Steel HD</div>
+        <div class="video-badge">Sci-Fi HD MP4</div>
       </div>
 
       <div class="focusable video-card" onclick="playVideo('https://archive.org/download/ElephantsDream/ed_1024_512kb.mp4', 'Test 4: Elephants Dream (Animación MP4)')" data-url="https://archive.org/download/ElephantsDream/ed_1024_512kb.mp4" data-name="Test 4: Elephants Dream" tabindex="0">
@@ -706,7 +706,7 @@
   <!-- REPRODUCTOR FULLSCREEN NATIVO (display: none INLINE GARANTIZADO) -->
   <div id="player-overlay" style="display: none;">
     <div id="player-title" class="player-banner">Canal</div>
-    <button id="player-exit-btn" class="player-exit-btn focusable" onclick="closePlayer()" tabindex="0">✕ SALIR DEL VIDEO (Atrás)</button>
+    <button id="player-exit-btn" class="player-exit-btn focusable" onclick="closePlayer()" tabindex="0">✕ CERRAR / VOLVER (Atrás)</button>
     <video id="main-video" controls autoplay playsinline webkit-playsinline></video>
   </div>
 
@@ -1022,8 +1022,8 @@
         return true;
       }
 
-      // Teclas Atrás / Volver / Exit (8, 27, 461, 10009, 10182, 4)
-      else if (code === 8 || code === 27 || code === 461 || code === 10009 || code === 10182 || code === 4) {
+      // Teclas Atrás / Volver / Exit (8, 27, 461, 10009, 10182, 4, 219)
+      else if (code === 8 || code === 27 || code === 461 || code === 10009 || code === 10182 || code === 4 || code === 219) {
         if (e.preventDefault) e.preventDefault();
         closePlayer();
         return false;
