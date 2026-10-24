@@ -2,29 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <!-- Viewport para resoluciones de TV 720p / 1080p -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Smart TV Web Launcher - Ultra Compatible</title>
-  
-  <!-- HLS.js con manejo de errores para navegadores antiguos -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+  <title>Smart TV Web Launcher - Edición Definitiva Legacy TV</title>
 
   <style>
-    /* RESET TOTAL COMPATIBLE CON WEBKIT 2012-2026 / OPERA TV / VIDAA */
+    /* RESET TOTAL COMPATIBLE CON WEBKIT 2012-2017 / OPERA TV / VIDAA 2.0-2.5 */
     * {
       -webkit-box-sizing: border-box;
       -moz-box-sizing: border-box;
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      outline: none;
+      outline: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: #0b0c10;
+      background: #0a0a0f;
       color: #ffffff;
       font-family: Arial, Helvetica, sans-serif;
       width: 100%;
@@ -35,248 +30,267 @@
       padding: 0;
     }
 
-    /* BARRA SUPERIOR DE DIAGNÓSTICO EN TIEMPO REAL */
+    /* BARRA SUPERIOR DE ESTADO Y TELEMETRÍA EN VIVO */
     #debug-bar {
       background: #00f0ff;
       color: #000000;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: bold;
-      padding: 4px 20px;
-      display: block;
+      padding: 6px 15px;
       text-align: center;
       letter-spacing: 0.5px;
+      border-bottom: 2px solid #ffffff;
     }
 
-    /* HEADER */
+    /* HEADER CON RELOJ Y CLIMA */
     header {
-      background: #12151e;
-      border-bottom: 2px solid #202738;
-      padding: 10px 30px;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-justify-content: space-between;
-      justify-content: space-between;
-      min-height: 80px;
+      background: #111420;
+      border-bottom: 2px solid #1f273b;
+      padding: 12px 25px;
+      min-height: 75px;
+      width: 100%;
     }
 
-    .brand-section {
-      display: inline-block;
+    .header-col-left {
+      float: left;
+      width: 30%;
     }
 
-    .brand-logo {
-      font-size: 24px;
-      font-weight: 800;
+    .brand-title {
+      font-size: 26px;
+      font-weight: 900;
       color: #ffffff;
       letter-spacing: 1px;
+      line-height: 32px;
     }
 
-    .brand-logo span {
+    .brand-title span {
       color: #00f0ff;
     }
 
-    .clock-section {
-      text-align: center;
-      display: inline-block;
-    }
-
-    .clock-time {
-      font-size: 34px;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: 2px;
-    }
-
-    .clock-date {
+    .brand-sub {
       font-size: 12px;
-      color: #9aa0a6;
+      color: #8994af;
       margin-top: 2px;
     }
 
-    .weather-box {
-      background: #19202e;
-      border: 1px solid #28334a;
-      border-radius: 8px;
-      padding: 6px 14px;
-      display: inline-block;
+    .header-col-center {
+      float: left;
+      width: 40%;
+      text-align: center;
+    }
+
+    .clock-display {
+      font-size: 36px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 2px;
+      line-height: 36px;
+    }
+
+    .clock-subtitle {
+      font-size: 13px;
+      color: #8994af;
+      margin-top: 3px;
+    }
+
+    .header-col-right {
+      float: right;
+      width: 30%;
       text-align: right;
     }
 
-    .weather-temp {
-      font-size: 20px;
+    .weather-pill {
+      display: inline-block;
+      background: #181d2e;
+      border: 1px solid #29344d;
+      border-radius: 8px;
+      padding: 6px 16px;
+      text-align: right;
+    }
+
+    .weather-degrees {
+      font-size: 22px;
       font-weight: bold;
       color: #00f0ff;
+      line-height: 24px;
     }
 
-    .weather-loc {
-      font-size: 11px;
-      color: #aaaaaa;
+    .weather-city {
+      font-size: 12px;
+      color: #8994af;
     }
 
-    /* CONTENEDOR PRINCIPAL */
-    main {
-      padding: 20px 30px 60px 30px;
-    }
-
-    .section-title {
-      font-size: 19px;
-      font-weight: 700;
-      color: #00f0ff;
-      margin: 15px 0 10px 0;
-      border-left: 5px solid #00f0ff;
-      padding-left: 10px;
-      clear: both;
-    }
-
-    /* GRILLAS COMPATIBLES CON FLEXBOX Y FLOAT (CERO FALLAS EN MOTORES ANTIGUOS) */
-    .row-wrap {
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-flex-wrap: wrap;
-      flex-wrap: wrap;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
-    .row-wrap:after {
+    .clearfix:after {
       content: "";
       display: table;
       clear: both;
     }
 
-    /* TARJETAS INTERACTIVAS (SOPORTE DUAL: RATÓN / D-PAD) */
+    /* CONTENEDOR PRINCIPAL */
+    main {
+      padding: 15px 25px 70px 25px;
+    }
+
+    .section-header {
+      font-size: 18px;
+      font-weight: bold;
+      color: #00f0ff;
+      margin: 18px 0 10px 0;
+      border-left: 6px solid #00f0ff;
+      padding-left: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-row {
+      width: 100%;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    /* ELEMENTOS FOCO / INTERACTIVOS (SOPORTE DUAL: CONTROL REMOTO D-PAD Y RATON) */
     .focusable {
+      display: inline-block;
+      vertical-align: top;
+      margin: 6px;
+      background: #141724;
+      border: 3px solid #202638;
+      border-radius: 10px;
+      color: #ffffff;
+      text-decoration: none;
+      box-sizing: border-box;
       cursor: pointer;
       position: relative;
-      background: #141824;
-      border: 2px solid #232c3f;
-      border-radius: 10px;
-      text-decoration: none;
-      color: #ffffff;
-      -webkit-transition: -webkit-transform 0.1s ease-out;
-      transition: transform 0.1s ease-out;
     }
 
-    /* Borde de foco gigante ultra visible */
+    /* FOCO DE ALTO CONTRASTE */
     .focusable:hover,
     .focusable.focused {
-      outline: 4px solid #00f0ff !important;
-      border-color: #00f0ff !important;
+      border: 4px solid #00f0ff !important;
+      background: #1d253d !important;
+      box-shadow: 0 0 18px #00f0ff !important;
       -webkit-transform: scale(1.05);
       transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.8) !important;
-      z-index: 50;
+      z-index: 99;
     }
 
-    /* APLICACIONES */
+    /* TARJETAS DE APLICACIONES */
     .app-card {
-      width: 15%;
-      margin: 0.8%;
-      float: left;
-      height: 140px;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-flex-direction: column;
-      flex-direction: column;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-justify-content: center;
-      justify-content: center;
+      width: 15.2%;
+      min-width: 145px;
+      height: 110px;
       text-align: center;
-      padding: 10px;
+      padding: 12px 8px;
     }
 
-    .app-badge-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-justify-content: center;
-      justify-content: center;
-      margin-bottom: 10px;
+    .app-icon-wrap {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 8px auto;
+      border-radius: 8px;
+      line-height: 44px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
     }
 
-    .app-badge-icon svg {
-      width: 30px;
-      height: 30px;
-      fill: #ffffff;
-    }
+    .app-card.youtube .app-icon-wrap { background: #e50914; }
+    .app-card.pluto .app-icon-wrap { background: #004b93; }
+    .app-card.plex .app-icon-wrap { background: #e5a00d; }
+    .app-card.twitch .app-icon-wrap { background: #9146ff; }
+    .app-card.google .app-icon-wrap { background: #2a9d8f; }
+    .app-card.weather .app-icon-wrap { background: #0077b6; }
 
-    .app-card.youtube .app-badge-icon { background: #e50914; }
-    .app-card.pluto .app-badge-icon { background: #004b93; }
-    .app-card.plex .app-badge-icon { background: #e5a00d; }
-    .app-card.twitch .app-badge-icon { background: #9146ff; }
-    .app-card.iptv .app-badge-icon { background: #00b4d8; }
-    .app-card.browser .app-badge-icon { background: #2a9d8f; }
-
-    .app-title {
-      font-size: 15px;
-      font-weight: 700;
+    .app-name {
+      font-size: 14px;
+      font-weight: bold;
       color: #ffffff;
     }
 
     .app-sub {
       font-size: 11px;
-      color: #8892b0;
-      margin-top: 3px;
+      color: #8994af;
+      margin-top: 2px;
     }
 
-    /* CANALES DE TELEVISIÓN */
-    .channel-card {
-      width: 18.2%;
-      margin: 0.8%;
-      float: left;
-      height: 125px;
-      background: #111520;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-flex-direction: column;
-      flex-direction: column;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-justify-content: center;
-      justify-content: center;
-      text-align: center;
-      padding: 10px;
+    /* TARJETAS DE VIDEOS DE PRUEBA DIRECTOS (MP4) */
+    .video-card {
+      width: 23.5%;
+      min-width: 190px;
+      height: 100px;
+      padding: 12px;
+      text-align: left;
+      border-left: 6px solid #ffaa00;
     }
 
-    .channel-logo-img {
-      max-width: 80px;
-      max-height: 40px;
-      margin-bottom: 8px;
+    .video-num {
+      font-size: 11px;
+      font-weight: bold;
+      color: #ffaa00;
+      letter-spacing: 0.5px;
     }
 
-    .channel-title {
-      font-size: 14px;
-      font-weight: 700;
+    .video-name {
+      font-size: 15px;
+      font-weight: bold;
       color: #ffffff;
+      margin-top: 4px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      width: 100%;
     }
 
-    .channel-cat {
+    .video-badge {
+      display: inline-block;
       font-size: 10px;
-      color: #00f0ff;
-      background: #1b2333;
-      padding: 2px 6px;
+      font-weight: bold;
+      color: #ffffff;
+      background: #c77700;
+      padding: 2px 7px;
       border-radius: 4px;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
-    /* REPRODUCTOR DE PANTALLA COMPLETA */
+    /* TARJETAS DE CANALES EN VIVO (HLS) */
+    .channel-card {
+      width: 18.5%;
+      min-width: 165px;
+      height: 100px;
+      padding: 10px 12px;
+      text-align: left;
+      border-left: 5px solid #00f0ff;
+    }
+
+    .channel-num {
+      font-size: 11px;
+      font-weight: bold;
+      color: #00f0ff;
+      letter-spacing: 0.5px;
+    }
+
+    .channel-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #ffffff;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: bold;
+      color: #00f0ff;
+      background: #192338;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-top: 6px;
+    }
+
+    /* REPRODUCTOR EN PANTALLA COMPLETA */
     #player-overlay {
       position: fixed;
       top: 0;
@@ -284,7 +298,7 @@
       width: 100%;
       height: 100%;
       background: #000000;
-      z-index: 9999;
+      z-index: 99999;
       display: none;
     }
 
@@ -293,253 +307,374 @@
     }
 
     #main-video {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       background: #000000;
-      object-fit: contain;
     }
 
     .player-banner {
       position: absolute;
       top: 20px;
       left: 30px;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0, 0, 0, 0.85);
       border: 2px solid #00f0ff;
       padding: 10px 20px;
       border-radius: 8px;
       color: #ffffff;
       font-size: 20px;
       font-weight: bold;
+      z-index: 10;
     }
 
     .player-exit-btn {
       position: absolute;
       top: 20px;
       right: 30px;
-      background: #ff3344;
+      background: #d90429;
       color: #ffffff;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: bold;
-      border: none;
-      padding: 12px 24px;
+      border: 3px solid #ffffff;
+      padding: 12px 26px;
       border-radius: 8px;
       cursor: pointer;
+      z-index: 10;
     }
 
-    /* GUIA DE TECLAS EN FOOTER */
+    .player-exit-btn:hover,
+    .player-exit-btn.focused {
+      border: 4px solid #00f0ff !important;
+      background: #ef233c !important;
+      box-shadow: 0 0 20px #00f0ff !important;
+    }
+
+    /* FOOTER CON GUIA DE TECLAS */
     footer {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 40px;
-      background: #0a0d14;
-      border-top: 1px solid #1c2230;
-      color: #aaaaaa;
-      font-size: 12px;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-justify-content: center;
-      justify-content: center;
-      gap: 20px;
+      height: 42px;
+      background: #0a0c12;
+      border-top: 2px solid #1c2333;
+      color: #9aa5be;
+      font-size: 13px;
+      font-weight: bold;
+      line-height: 42px;
+      text-align: center;
+      z-index: 500;
+    }
+
+    footer span {
+      margin: 0 10px;
     }
   </style>
 </head>
 <body>
 
-  <!-- BARRA DE DIAGNÓSTICO EN VIVO (MUESTRA TECLAS PULSADAS EN PANTALLA) -->
+  <!-- BARRA DE DIAGNÓSTICO EN TIEMPO REAL -->
   <div id="debug-bar">
-    📺 MODO HISENSE VIDAA ACTIVO | Presiona flechas o usa el cursor | Tecla: <span id="debug-key">Ninguna</span> | Enfocado: <span id="debug-el">YouTube TV</span>
+    HISENSE VIDAA | Tecla pulsada: <span id="debug-key">Ninguna</span> | Seleccionado: <span id="debug-name">YouTube TV</span> | Estado Video: <span id="debug-video">Listo</span>
   </div>
 
   <!-- HEADER -->
-  <header>
-    <div class="brand-section">
-      <div class="brand-logo">HISENSE <span>VIDAA</span></div>
+  <header class="clearfix">
+    <div class="header-col-left">
+      <div class="brand-title">HISENSE <span>VIDAA</span></div>
+      <div class="brand-sub">Smart TV Web Launcher • Chile 2026</div>
     </div>
 
-    <div class="clock-section">
-      <div id="clock-time" class="clock-time">12:00:00</div>
-      <div id="clock-date" class="clock-date">Viernes, Temuco</div>
+    <div class="header-col-center">
+      <div id="clock-display" class="clock-display">12:00:00</div>
+      <div id="clock-date" class="clock-subtitle">Cargando fecha...</div>
     </div>
 
-    <div class="weather-box">
-      <div id="weather-temp" class="weather-temp">12°C ⛅</div>
-      <div class="weather-loc">Temuco, Chile</div>
+    <div class="header-col-right">
+      <div class="weather-pill">
+        <div id="weather-temp" class="weather-degrees">12°C ⛅</div>
+        <div class="weather-city">Temuco, Chile</div>
+      </div>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main id="main-content">
-    
-    <div class="section-title">Aplicaciones y Streaming (OK para entrar)</div>
-    <div class="row-wrap">
+  <!-- CONTENIDO PRINCIPAL (100% ESTÁTICO: SE VE INCLUSO SI JAVASCRIPT FALLA) -->
+  <main>
 
-      <!-- YOUTUBE TV -->
+    <!-- SECCIÓN 1: APLICACIONES Y PORTALES WEB -->
+    <div class="section-header">1. Aplicaciones y Streaming Web (OK para abrir)</div>
+    <div class="card-row">
       <a href="https://www.youtube.com/tv" class="focusable app-card youtube focused" data-name="YouTube TV" tabindex="0">
-        <div class="app-badge-icon">
-          <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        </div>
-        <div class="app-title">YouTube TV</div>
-        <div class="app-sub">Oficial TV</div>
+        <div class="app-icon-wrap">▶</div>
+        <div class="app-name">YouTube TV</div>
+        <div class="app-sub">Portal Oficial TV</div>
       </a>
 
-      <!-- PLUTO TV -->
       <a href="https://pluto.tv" class="focusable app-card pluto" data-name="Pluto TV" tabindex="0">
-        <div class="app-badge-icon">
-          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </div>
-        <div class="app-title">Pluto TV</div>
+        <div class="app-icon-wrap">★</div>
+        <div class="app-name">Pluto TV</div>
         <div class="app-sub">Canales Gratis</div>
       </a>
 
-      <!-- PLEX WEB -->
-      <a href="https://app.plex.tv" class="focusable app-card plex" data-name="Plex" tabindex="0">
-        <div class="app-badge-icon">
-          <svg viewBox="0 0 24 24"><polygon points="3 3 10 3 15 12 10 21 3 21 8 12 3 3"/><polygon points="14 3 21 3 21 21 14 21 19 12 14 3"/></svg>
-        </div>
-        <div class="app-title">Plex Web</div>
-        <div class="app-sub">Películas</div>
+      <a href="https://app.plex.tv" class="focusable app-card plex" data-name="Plex Web" tabindex="0">
+        <div class="app-icon-wrap">◆</div>
+        <div class="app-name">Plex Web</div>
+        <div class="app-sub">Cine y Series</div>
       </a>
 
-      <!-- TWITCH TV -->
       <a href="https://www.twitch.tv" class="focusable app-card twitch" data-name="Twitch TV" tabindex="0">
-        <div class="app-badge-icon">
-          <svg viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
-        </div>
-        <div class="app-title">Twitch TV</div>
+        <div class="app-icon-wrap">▲</div>
+        <div class="app-name">Twitch TV</div>
         <div class="app-sub">Directos</div>
       </a>
 
-      <!-- CANAL 13 CHILE DIRECTO -->
-      <div class="focusable app-card iptv" data-name="Canal 13" onclick="playChannelIdx(0)" tabindex="0">
-        <div class="app-badge-icon">
-          <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
-        </div>
-        <div class="app-title">Canal 13</div>
-        <div class="app-sub">En Vivo Chile</div>
-      </div>
-
-      <!-- GOOGLE LIGERO -->
-      <a href="https://www.google.com" class="focusable app-card browser" data-name="Buscador" tabindex="0">
-        <div class="app-badge-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
-        </div>
-        <div class="app-title">Buscador</div>
-        <div class="app-sub">Google Web</div>
+      <a href="https://www.google.com" class="focusable app-card google" data-name="Buscador Google" tabindex="0">
+        <div class="app-icon-wrap">🔍</div>
+        <div class="app-name">Google</div>
+        <div class="app-sub">Buscador Web</div>
       </a>
 
+      <a href="https://www.accuweather.com/es/cl/temuco/56434/weather-forecast/56434" class="focusable app-card weather" data-name="El Tiempo" tabindex="0">
+        <div class="app-icon-wrap">⛅</div>
+        <div class="app-name">El Tiempo</div>
+        <div class="app-sub">Pronóstico Temuco</div>
+      </a>
     </div>
 
-    <!-- SECCIÓN CANALES EN VIVO (20 CANALES CON BOTÓN DIRECTO) -->
-    <div class="section-title">Canales en Vivo de Chile y el Mundo (Haz clic o pulsa OK)</div>
-    <div id="channels-container" class="row-wrap">
-      <!-- Inyectado por JS -->
+    <!-- SECCIÓN 2: VÍDEOS DE PRUEBA MP4 (COMPATIBILIDAD 100% GARANTIZADA SIN HLS) -->
+    <div class="section-header" style="color: #ffaa00; border-left-color: #ffaa00;">2. Vídeos de Prueba Directos MP4 (H.264 - Cero Fallas)</div>
+    <div class="card-row">
+      <div class="focusable video-card" onclick="playVideo('https://www.w3schools.com/html/mov_bbb.mp4', 'Test 1: Big Buck Bunny (Clip MP4)')" data-url="https://www.w3schools.com/html/mov_bbb.mp4" data-name="Test 1: Big Buck Bunny" tabindex="0">
+        <div class="video-num">VÍDEO TEST 1</div>
+        <div class="video-name">Big Buck Bunny (Test)</div>
+        <div class="video-badge">MP4 H.264 Ligero</div>
+      </div>
+
+      <div class="focusable video-card" onclick="playVideo('https://media.w3.org/2010/05/sintel/trailer.mp4', 'Test 2: Sintel Trailer HD (MP4)')" data-url="https://media.w3.org/2010/05/sintel/trailer.mp4" data-name="Test 2: Sintel Trailer" tabindex="0">
+        <div class="video-num">VÍDEO TEST 2</div>
+        <div class="video-name">Sintel Trailer HD</div>
+        <div class="video-badge">Cine HD MP4</div>
+      </div>
+
+      <div class="focusable video-card" onclick="playVideo('https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4', 'Test 3: Big Buck Bunny 720p HD (Película Completa)')" data-url="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4" data-name="Test 3: Big Buck Bunny Completo" tabindex="0">
+        <div class="video-num">VÍDEO TEST 3</div>
+        <div class="video-name">Película Completa BBB</div>
+        <div class="video-badge">720p H.264 Directo</div>
+      </div>
+
+      <div class="focusable video-card" onclick="playVideo('https://archive.org/download/ElephantsDream/ed_1024_512kb.mp4', 'Test 4: Elephants Dream (Animación MP4)')" data-url="https://archive.org/download/ElephantsDream/ed_1024_512kb.mp4" data-name="Test 4: Elephants Dream" tabindex="0">
+        <div class="video-num">VÍDEO TEST 4</div>
+        <div class="video-name">Elephants Dream</div>
+        <div class="video-badge">Animación MP4</div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: CANALES EN VIVO DE CHILE Y EL MUNDO (HLS NATIVO) -->
+    <div class="section-header">3. Canales en Vivo Nacionales e Internacionales (HLS Nativo)</div>
+    <div class="card-row">
+
+      <!-- CANAL 1 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/BBp0VeP6QtOOlH8nu3bWTg/master.m3u8', 'Canal 13 Chile')" data-url="https://origin.dpsgo.com/ssai/event/BBp0VeP6QtOOlH8nu3bWTg/master.m3u8" data-name="Canal 13 Chile" tabindex="0">
+        <div class="channel-num">CANAL 01</div>
+        <div class="channel-name">Canal 13 Chile</div>
+        <div class="channel-badge">Chile En Vivo</div>
+      </div>
+
+      <!-- CANAL 2 -->
+      <div class="focusable channel-card" onclick="playVideo('https://redirector.rudo.video/hls-video/931b584451fa6dd1313ee66efbfd5802e3f3bcea/adntv/adntv.smil/playlist.m3u8', 'ADN TV Chile')" data-url="https://redirector.rudo.video/hls-video/931b584451fa6dd1313ee66efbfd5802e3f3bcea/adntv/adntv.smil/playlist.m3u8" data-name="ADN TV Chile" tabindex="0">
+        <div class="channel-num">CANAL 02</div>
+        <div class="channel-name">ADN TV Chile</div>
+        <div class="channel-badge">Noticias 24/7</div>
+      </div>
+
+      <!-- CANAL 3 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8', '13C Cultura Chile')" data-url="https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8" data-name="13C Cultura" tabindex="0">
+        <div class="channel-num">CANAL 03</div>
+        <div class="channel-name">13C Cultura</div>
+        <div class="channel-badge">Cultura Chile</div>
+      </div>
+
+      <!-- CANAL 4 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/g7_JOM0ORki9SR5RKHe-Kw/master.m3u8', '13 Realities')" data-url="https://origin.dpsgo.com/ssai/event/g7_JOM0ORki9SR5RKHe-Kw/master.m3u8" data-name="13 Realities" tabindex="0">
+        <div class="channel-num">CANAL 04</div>
+        <div class="channel-name">13 Realities</div>
+        <div class="channel-badge">Entretenimiento</div>
+      </div>
+
+      <!-- CANAL 5 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/LhHrVtyeQkKZ-Ye_xEU75g/master.m3u8', '13 Kids Infantil')" data-url="https://origin.dpsgo.com/ssai/event/LhHrVtyeQkKZ-Ye_xEU75g/master.m3u8" data-name="13 Kids" tabindex="0">
+        <div class="channel-num">CANAL 05</div>
+        <div class="channel-name">13 Kids</div>
+        <div class="channel-badge">Infantil</div>
+      </div>
+
+      <!-- CANAL 6 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/cKWySXKgSK-SzlJmESkOWw/master.m3u8', '13 Humor Comedia')" data-url="https://origin.dpsgo.com/ssai/event/cKWySXKgSK-SzlJmESkOWw/master.m3u8" data-name="13 Humor" tabindex="0">
+        <div class="channel-num">CANAL 06</div>
+        <div class="channel-name">13 Humor</div>
+        <div class="channel-badge">Comedia</div>
+      </div>
+
+      <!-- CANAL 7 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/Nftd0fM2SXasfDlRphvUsg/master.m3u8', '13 Festival Música')" data-url="https://origin.dpsgo.com/ssai/event/Nftd0fM2SXasfDlRphvUsg/master.m3u8" data-name="13 Festival" tabindex="0">
+        <div class="channel-num">CANAL 07</div>
+        <div class="channel-name">13 Festival</div>
+        <div class="channel-badge">Música Chile</div>
+      </div>
+
+      <!-- CANAL 8 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/f4TrySe8SoiGF8Lu3EIq1g/master.m3u8', '13 Telenovelas')" data-url="https://origin.dpsgo.com/ssai/event/f4TrySe8SoiGF8Lu3EIq1g/master.m3u8" data-name="13 Telenovelas" tabindex="0">
+        <div class="channel-num">CANAL 08</div>
+        <div class="channel-name">13 Telenovelas</div>
+        <div class="channel-badge">Series y Novelas</div>
+      </div>
+
+      <!-- CANAL 9 -->
+      <div class="focusable channel-card" onclick="playVideo('https://unlimited6-cl.dps.live/c9/c9.smil/playlist.m3u8', 'Canal 9 Biobío')" data-url="https://unlimited6-cl.dps.live/c9/c9.smil/playlist.m3u8" data-name="Canal 9 Biobío" tabindex="0">
+        <div class="channel-num">CANAL 09</div>
+        <div class="channel-name">Canal 9 Biobío</div>
+        <div class="channel-badge">Regional Concepción</div>
+      </div>
+
+      <!-- CANAL 10 -->
+      <div class="focusable channel-card" onclick="playVideo('https://unlimited6-cl.dps.live/atv/atv.smil/playlist.m3u8', 'Antofagasta TV')" data-url="https://unlimited6-cl.dps.live/atv/atv.smil/playlist.m3u8" data-name="Antofagasta TV" tabindex="0">
+        <div class="channel-num">CANAL 10</div>
+        <div class="channel-name">Antofagasta TV</div>
+        <div class="channel-badge">Regional Norte</div>
+      </div>
+
+      <!-- CANAL 11 -->
+      <div class="focusable channel-card" onclick="playVideo('https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8', 'DW Español Alemania')" data-url="https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8" data-name="DW Español" tabindex="0">
+        <div class="channel-num">CANAL 11</div>
+        <div class="channel-name">DW Español</div>
+        <div class="channel-badge">Alemania / Mundo</div>
+      </div>
+
+      <!-- CANAL 12 -->
+      <div class="focusable channel-card" onclick="playVideo('https://ztnr.rtve.es/ztnr/1694255.m3u8', 'TVE 24H España')" data-url="https://ztnr.rtve.es/ztnr/1694255.m3u8" data-name="TVE 24H España" tabindex="0">
+        <div class="channel-num">CANAL 12</div>
+        <div class="channel-name">TVE 24H España</div>
+        <div class="channel-badge">Noticias España</div>
+      </div>
+
+      <!-- CANAL 13 -->
+      <div class="focusable channel-card" onclick="playVideo('https://rt-esp.rttv.com/live/rtesp/playlist.m3u8', 'RT en Español')" data-url="https://rt-esp.rttv.com/live/rtesp/playlist.m3u8" data-name="RT en Español" tabindex="0">
+        <div class="channel-num">CANAL 13</div>
+        <div class="channel-name">RT en Español</div>
+        <div class="channel-badge">Internacional</div>
+      </div>
+
+      <!-- CANAL 14 -->
+      <div class="focusable channel-card" onclick="playVideo('https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8', 'NASA TV HD')" data-url="https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8" data-name="NASA TV HD" tabindex="0">
+        <div class="channel-num">CANAL 14</div>
+        <div class="channel-name">NASA TV HD</div>
+        <div class="channel-badge">Ciencia y Espacio</div>
+      </div>
+
+      <!-- CANAL 15 -->
+      <div class="focusable channel-card" onclick="playVideo('https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8', 'Red Bull TV')" data-url="https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8" data-name="Red Bull TV" tabindex="0">
+        <div class="channel-num">CANAL 15</div>
+        <div class="channel-name">Red Bull TV</div>
+        <div class="channel-badge">Deportes Acción</div>
+      </div>
+
+      <!-- CANAL 16 -->
+      <div class="focusable channel-card" onclick="playVideo('https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5d6fee87b8d4f4001a141b77/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientDeviceType=0&deviceDNT=0&deviceId=unknown&deviceMake=Chrome&deviceModel=Chrome&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid=unknown&userId=', 'Pluto TV Cine Acción')" data-url="https://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5d6fee87b8d4f4001a141b77/master.m3u8" data-name="Pluto TV Cine Acción" tabindex="0">
+        <div class="channel-num">CANAL 16</div>
+        <div class="channel-name">Pluto TV Cine Acción</div>
+        <div class="channel-badge">Películas 24/7</div>
+      </div>
+
+      <!-- CANAL 17 -->
+      <div class="focusable channel-card" onclick="playVideo('https://redirector.rudo.video/hls-video/ey6283je82983je9823je8jowowiekldk9838274/921tv/921tv.smil/playlist.m3u8', 'Agricultura TV')" data-url="https://redirector.rudo.video/hls-video/ey6283je82983je9823je8jowowiekldk9838274/921tv/921tv.smil/playlist.m3u8" data-name="Agricultura TV" tabindex="0">
+        <div class="channel-num">CANAL 17</div>
+        <div class="channel-name">Agricultura TV</div>
+        <div class="channel-badge">Campo y Noticias</div>
+      </div>
+
+      <!-- CANAL 18 -->
+      <div class="focusable channel-card" onclick="playVideo('https://origin.dpsgo.com/ssai/event/p4mmBxEzSmKAxY1GusOHrw/master.m3u8', '13P Lifestyle')" data-url="https://origin.dpsgo.com/ssai/event/p4mmBxEzSmKAxY1GusOHrw/master.m3u8" data-name="13P Lifestyle" tabindex="0">
+        <div class="channel-num">CANAL 18</div>
+        <div class="channel-name">13P Lifestyle</div>
+        <div class="channel-badge">Estilo de Vida</div>
+      </div>
+
+      <!-- CANAL 19 -->
+      <div class="focusable channel-card" onclick="playVideo('https://v2.tustreaming.cl/enlacebpbtv/index.m3u8', '15.1 BPB TV')" data-url="https://v2.tustreaming.cl/enlacebpbtv/index.m3u8" data-name="15.1 BPB TV" tabindex="0">
+        <div class="channel-num">CANAL 19</div>
+        <div class="channel-name">15.1 BPB TV</div>
+        <div class="channel-badge">Familiar Chile</div>
+      </div>
+
+      <!-- CANAL 20 -->
+      <div class="focusable channel-card" onclick="playVideo('https://v2.tustreaming.cl/atacamanoticias/index.m3u8', 'Atacama Noticias')" data-url="https://v2.tustreaming.cl/atacamanoticias/index.m3u8" data-name="Atacama Noticias" tabindex="0">
+        <div class="channel-num">CANAL 20</div>
+        <div class="channel-name">Atacama Noticias</div>
+        <div class="channel-badge">Copiapó y Norte</div>
+      </div>
+
     </div>
 
   </main>
 
-  <!-- REPRODUCTOR FULLSCREEN CON SALIDA SEGURA -->
+  <!-- REPRODUCTOR FULLSCREEN NATIVO -->
   <div id="player-overlay">
     <div id="player-title" class="player-banner">Canal</div>
-    <button class="player-exit-btn focusable" onclick="closePlayer()" tabindex="0">✕ SALIR DEL VIDEO (Atrás)</button>
+    <button id="player-exit-btn" class="player-exit-btn focusable" onclick="closePlayer()" tabindex="0">✕ SALIR DEL VIDEO (Atrás)</button>
     <video id="main-video" controls autoplay playsinline webkit-playsinline></video>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER CON LEYENDA DEL CONTROL REMOTO -->
   <footer>
-    <span>Control Remoto: ◀ ▶ ▲ ▼ para navegar</span>
+    <span>Navegar: ◀ ▶ ▲ ▼</span>
     <span>•</span>
-    <span>[ OK ] para reproducir</span>
+    <span>Reproducir: [ OK ]</span>
     <span>•</span>
-    <span>[ ↩ Atrás / Exit ] para salir</span>
+    <span>Salir: [ ↩ Atrás / Return ]</span>
     <span>•</span>
-    <span>0-9: Acceso directo</span>
+    <span>Directo: [ 1 - 9 ]</span>
   </footer>
 
-  <!-- JAVASCRIPT ULTRA-COMPATIBLE (ES3 / ES5 PURO) -->
+  <!-- SCRIPT ES3/ES5 ULTRA ROBUSTO (CERO DEPENDENCIAS EXTERNAS, CERO ES6) -->
   <script>
-    // 1. MANEJO GLOBAL DE ERRORES (SILENCIOSO PARA NO TRABAR LA TV)
-    window.onerror = function(msg, url, line) {
-      var d = document.getElementById('debug-key');
+    // Variable global de foco
+    var currentFocus = null;
+    var lastContentFocus = null;
+
+    // Manejo global silencioso de errores
+    window.onerror = function(msg) {
+      var d = document.getElementById('debug-video');
       if (d) d.innerText = "Error: " + msg;
       return true;
     };
-
-    // 2. POLYFILLS ESENCIALES PARA WEBKIT/OPERA TV VIEJO
-    if (window.NodeList && !NodeList.prototype.forEach) {
-      NodeList.prototype.forEach = Array.prototype.forEach;
-    }
 
     function pad(n) {
       return (n < 10 ? '0' : '') + n;
     }
 
-    // 3. CANALES VERIFICADOS
-    var CHANNELS = [
-      { name: "Canal 13 Chile", url: "https://origin.dpsgo.com/ssai/event/BBp0VeP6QtOOlH8nu3bWTg/master.m3u8", cat: "Chile" },
-      { name: "ADN TV Chile", url: "https://redirector.rudo.video/hls-video/931b584451fa6dd1313ee66efbfd5802e3f3bcea/adntv/adntv.smil/playlist.m3u8", cat: "Noticias" },
-      { name: "13C Chile", url: "https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8", cat: "Cultura" },
-      { name: "13 Realities", url: "https://origin.dpsgo.com/ssai/event/g7_JOM0ORki9SR5RKHe-Kw/master.m3u8", cat: "Chile" },
-      { name: "13 Kids", url: "https://origin.dpsgo.com/ssai/event/LhHrVtyeQkKZ-Ye_xEU75g/master.m3u8", cat: "Infantil" },
-      { name: "13 Humor", url: "https://origin.dpsgo.com/ssai/event/cKWySXKgSK-SzlJmESkOWw/master.m3u8", cat: "Comedia" },
-      { name: "13 Festival", url: "https://origin.dpsgo.com/ssai/event/Nftd0fM2SXasfDlRphvUsg/master.m3u8", cat: "Música" },
-      { name: "13 Telenovelas", url: "https://origin.dpsgo.com/ssai/event/f4TrySe8SoiGF8Lu3EIq1g/master.m3u8", cat: "Series" },
-      { name: "Antofagasta TV", url: "https://unlimited6-cl.dps.live/atv/atv.smil/playlist.m3u8", cat: "Regional" },
-      { name: "DW Español", url: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8", cat: "Noticias" },
-      { name: "NASA TV HD", url: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8", cat: "Ciencia" },
-      { name: "Red Bull TV", url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8", cat: "Deportes" },
-      { name: "13P Lifestyle", url: "https://origin.dpsgo.com/ssai/event/p4mmBxEzSmKAxY1GusOHrw/master.m3u8", cat: "Estilo" },
-      { name: "15.1 BPB", url: "https://v2.tustreaming.cl/enlacebpbtv/index.m3u8", cat: "Chile" },
-      { name: "Agricultura TV", url: "https://redirector.rudo.video/hls-video/ey6283je82983je9823je8jowowiekldk9838274/921tv/921tv.smil/playlist.m3u8", cat: "Noticias" },
-      { name: "Atacama Noticias", url: "https://v2.tustreaming.cl/atacamanoticias/index.m3u8", cat: "Noticias" }
-    ];
-
-    var currentFocus = null;
-    var hls = null;
-
-    // 4. RENDERIZADO DE CANALES
-    function render() {
-      var cont = document.getElementById('channels-container');
-      if (!cont) return;
-      var html = '';
-      for (var i = 0; i < CHANNELS.length; i++) {
-        var ch = CHANNELS[i];
-        html += '<div class="focusable channel-card" tabindex="0" data-name="' + ch.name + '" onclick="playChannelIdx(' + i + ')">' +
-                  '<div class="channel-title">' + (i + 1) + '. ' + ch.name + '</div>' +
-                  '<div class="channel-cat">' + ch.cat + '</div>' +
-                '</div>';
-      }
-      cont.innerHTML = html;
-
-      // Asignar eventos de mouse y foco
-      var allFocus = document.querySelectorAll('.focusable');
-      for (var j = 0; j < allFocus.length; j++) {
-        (function(el) {
-          el.onmouseenter = function() { setFocus(el); };
-        })(allFocus[j]);
-      }
-
-      // Foco inicial
-      var first = document.querySelector('.focusable');
-      if (first) setFocus(first);
-    }
-
-    // 5. RELOJ (SIN PADSTART, COMPATIBLE CON CUALQUIER JS)
-    function tick() {
+    // 1. RELOJ EN TIEMPO REAL (ES3 PURO)
+    function updateClock() {
       var d = new Date();
-      var t = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-      var el = document.getElementById('clock-time');
-      if (el) el.innerText = t;
-    }
-    setInterval(tick, 1000);
-    tick();
+      var hh = pad(d.getHours());
+      var mm = pad(d.getMinutes());
+      var ss = pad(d.getSeconds());
+      var clockEl = document.getElementById('clock-display');
+      if (clockEl) clockEl.innerText = hh + ':' + mm + ':' + ss;
 
-    // 6. CLIMA MEDIANTE XHR (CERO DEPENDENCIAS DE FETCH)
-    function loadWeather() {
+      var days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      var months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      var dateEl = document.getElementById('clock-date');
+      if (dateEl) {
+        dateEl.innerText = days[d.getDay()] + ' ' + d.getDate() + ' de ' + months[d.getMonth()] + ' • Temuco, Chile';
+      }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. CLIMA DE TEMUCO (XHR ESTÁNDAR)
+    function fetchWeather() {
       try {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude=-38.7359&longitude=-72.5904&current_weather=true', true);
@@ -547,9 +682,9 @@
         xhr.onreadystatechange = function() {
           if (xhr.readyState === 4 && xhr.status === 200) {
             try {
-              var res = JSON.parse(xhr.responseText);
-              if (res && res.current_weather) {
-                var temp = Math.round(res.current_weather.temperature);
+              var data = JSON.parse(xhr.responseText);
+              if (data && data.current_weather) {
+                var temp = Math.round(data.current_weather.temperature);
                 var el = document.getElementById('weather-temp');
                 if (el) el.innerText = temp + '°C ⛅';
               }
@@ -559,163 +694,285 @@
         xhr.send();
       } catch(e) {}
     }
-    loadWeather();
+    fetchWeather();
 
-    // 7. GESTIÓN DE FOCO
+    // 3. ASIGNAR FOCO VISUAL
     function setFocus(el) {
       if (!el) return;
-      if (currentFocus) {
-        currentFocus.className = currentFocus.className.replace(/\bfocused\b/g, '').trim();
+      if (currentFocus && currentFocus !== el) {
+        currentFocus.className = currentFocus.className.replace(/\bfocused\b/g, '').replace(/\s+/g, ' ').trim();
       }
       currentFocus = el;
-      currentFocus.className += ' focused';
+      if (currentFocus.className.indexOf('focused') === -1) {
+        currentFocus.className += ' focused';
+      }
       try { currentFocus.focus(); } catch(e) {}
 
-      var dEl = document.getElementById('debug-el');
-      if (dEl) {
-        var name = el.getAttribute('data-name') || el.innerText || 'Elemento';
-        dEl.innerText = name.slice(0, 20);
+      var ov = document.getElementById('player-overlay');
+      if (!ov || ov.className.indexOf('active') === -1) {
+        lastContentFocus = currentFocus;
       }
+
+      var name = el.getAttribute('data-name') || el.innerText || 'Elemento';
+      var dName = document.getElementById('debug-name');
+      if (dName) dName.innerText = name.slice(0, 25);
     }
 
-    // 8. NAVEGACIÓN D-PAD SENCILLA Y DIRECTA
-    function moveFocus(dir) {
-      var all = [];
-      var els = document.querySelectorAll('.focusable');
-      var overlay = document.getElementById('player-overlay');
-      var isPlayerActive = overlay && overlay.className.indexOf('active') !== -1;
+    // 4. OBTENER LISTA DE ELEMENTOS ENFOCABLES VISIBLES
+    function getFocusableList() {
+      var ov = document.getElementById('player-overlay');
+      var isPlayerActive = ov && (ov.className.indexOf('active') !== -1 || ov.style.display === 'block');
+      
+      if (isPlayerActive) {
+        var exitBtn = document.getElementById('player-exit-btn');
+        return exitBtn ? [exitBtn] : [];
+      }
 
-      for (var i = 0; i < els.length; i++) {
-        var el = els[i];
-        if (isPlayerActive) {
-          if (overlay.contains(el)) all.push(el);
-        } else {
-          if (!overlay.contains(el) && el.offsetWidth > 0) all.push(el);
+      var all = document.getElementsByTagName('*');
+      var list = [];
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (el.className && el.className.indexOf('focusable') !== -1 && el.id !== 'player-exit-btn') {
+          list.push(el);
+        }
+      }
+      return list;
+    }
+
+    // 5. NAVEGACIÓN D-PAD EN CUADRÍCULA
+    function moveFocus(dir) {
+      var list = getFocusableList();
+      if (!list || list.length === 0) return;
+
+      if (!currentFocus) {
+        setFocus(list[0]);
+        return;
+      }
+
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] === currentFocus) {
+          idx = i;
+          break;
         }
       }
 
-      if (all.length === 0) return;
-      if (!currentFocus) { setFocus(all[0]); return; }
-
-      var idx = -1;
-      for (var j = 0; j < all.length; j++) {
-        if (all[j] === currentFocus) { idx = j; break; }
+      if (idx === -1) {
+        setFocus(list[0]);
+        return;
       }
 
       var next = idx;
-      if (dir === 'right') next = idx + 1;
-      else if (dir === 'left') next = idx - 1;
-      else if (dir === 'down') next = idx + 5; // Salto de fila
-      else if (dir === 'up') next = idx - 5;
+      if (dir === 'right') {
+        next = idx + 1;
+        if (next >= list.length) next = 0; // Wrap horizontal
+      } else if (dir === 'left') {
+        next = idx - 1;
+        if (next < 0) next = list.length - 1;
+      } else if (dir === 'down') {
+        // Encontrar elemento geométricamente más cercano abajo
+        var curRect = currentFocus.getBoundingClientRect ? currentFocus.getBoundingClientRect() : null;
+        var bestIdx = -1;
+        var minDistance = 999999;
+        if (curRect) {
+          for (var j = 0; j < list.length; j++) {
+            if (j === idx) continue;
+            var r = list[j].getBoundingClientRect();
+            if (r.top >= curRect.bottom - 10) {
+              var dx = (r.left + r.width / 2) - (curRect.left + curRect.width / 2);
+              var dy = r.top - curRect.bottom;
+              var dist = (dy * 2) + Math.abs(dx);
+              if (dist < minDistance) {
+                minDistance = dist;
+                bestIdx = j;
+              }
+            }
+          }
+        }
+        if (bestIdx !== -1) {
+          next = bestIdx;
+        } else {
+          next = idx + 5;
+          if (next >= list.length) next = list.length - 1;
+        }
+      } else if (dir === 'up') {
+        var curRectUp = currentFocus.getBoundingClientRect ? currentFocus.getBoundingClientRect() : null;
+        var bestIdxUp = -1;
+        var minDistanceUp = 999999;
+        if (curRectUp) {
+          for (var k = 0; k < list.length; k++) {
+            if (k === idx) continue;
+            var ru = list[k].getBoundingClientRect();
+            if (ru.bottom <= curRectUp.top + 10) {
+              var dxu = (ru.left + ru.width / 2) - (curRectUp.left + curRectUp.width / 2);
+              var dyu = curRectUp.top - ru.bottom;
+              var distu = (dyu * 2) + Math.abs(dxu);
+              if (distu < minDistanceUp) {
+                minDistanceUp = distu;
+                bestIdxUp = k;
+              }
+            }
+          }
+        }
+        if (bestIdxUp !== -1) {
+          next = bestIdxUp;
+        } else {
+          next = idx - 5;
+          if (next < 0) next = 0;
+        }
+      }
 
-      if (next < 0) next = 0;
-      if (next >= all.length) next = all.length - 1;
-
-      setFocus(all[next]);
+      setFocus(list[next]);
     }
 
-    // 9. REPRODUCTOR DE VIDEO ROBUSTO CON LIMPIEZA DE RAM
-    function playChannelIdx(idx) {
-      if (idx < 0 || idx >= CHANNELS.length) return;
-      var ch = CHANNELS[idx];
-
+    // 6. REPRODUCTOR DE VIDEO NATIVO (SIN DEPENDENCIAS EXTERNAS)
+    function playVideo(url, title) {
       var ov = document.getElementById('player-overlay');
       var tit = document.getElementById('player-title');
       var vid = document.getElementById('main-video');
+      var dVid = document.getElementById('debug-video');
 
-      if (tit) tit.innerText = ch.name;
-      if (ov) ov.className = 'active';
-
-      // Destruir HLS anterior
-      if (hls) {
-        try { hls.destroy(); } catch(e) {}
-        hls = null;
+      if (tit) tit.innerText = title;
+      if (ov) {
+        ov.style.display = 'block';
+        ov.className = 'active';
       }
+      if (dVid) dVid.innerText = "Reproduciendo: " + title.slice(0, 15);
 
-      try {
-        vid.pause();
-        vid.src = "";
-        vid.load();
-      } catch(e) {}
-
-      // Intentar HLS o Nativo
-      if (window.Hls && Hls.isSupported()) {
+      if (vid) {
         try {
-          hls = new Hls({ enableWorker: false, maxBufferLength: 8 });
-          hls.loadSource(ch.url);
-          hls.attachMedia(vid);
-          hls.on(Hls.Events.MANIFEST_PARSED, function() {
-            vid.play();
-          });
+          vid.pause();
+          vid.src = url;
+          vid.load();
+          var playPromise = vid.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function(err) {
+              if (dVid) dVid.innerText = "Info: " + err;
+            });
+          }
         } catch(e) {
-          vid.src = ch.url;
-          vid.play();
+          if (dVid) dVid.innerText = "Excepción: " + e;
         }
-      } else {
-        // Fallback nativo Apple/WebKit TV
-        vid.src = ch.url;
-        vid.play();
       }
+
+      var exitBtn = document.getElementById('player-exit-btn');
+      if (exitBtn) setFocus(exitBtn);
     }
 
+    // 7. CERRAR REPRODUCTOR Y LIBERAR MEMORIA RAM
     function closePlayer() {
       var ov = document.getElementById('player-overlay');
-      if (ov) ov.className = '';
-
-      if (hls) {
-        try { hls.destroy(); } catch(e) {}
-        hls = null;
-      }
-
       var vid = document.getElementById('main-video');
+      var dVid = document.getElementById('debug-video');
+
+      if (ov) {
+        ov.style.display = 'none';
+        ov.className = '';
+      }
+      if (dVid) dVid.innerText = "Detenido";
+
       if (vid) {
         try {
           vid.pause();
           vid.removeAttribute('src');
           vid.src = '';
-          vid.load(); // Libera RAM de la TV
+          vid.load(); // Libera el buffer de video en hardware de la TV
         } catch(e) {}
       }
 
-      var first = document.querySelector('.app-card');
-      if (first) setFocus(first);
+      if (lastContentFocus) {
+        setFocus(lastContentFocus);
+      } else {
+        var first = document.querySelector ? document.querySelector('.focusable') : null;
+        if (first) setFocus(first);
+      }
     }
 
-    // 10. LISTENER DE CONTROL REMOTO D-PAD & TECLAS NUMÉRICAS
-    window.addEventListener('keydown', function(e) {
+    // 8. MANEJO DE EVENTOS DE TECLADO / CONTROL REMOTO D-PAD
+    document.onkeydown = function(e) {
+      e = e || window.event;
       var code = e.keyCode || e.which;
+
       var dKey = document.getElementById('debug-key');
       if (dKey) dKey.innerText = code;
 
       // Flechas
-      if (code === 37) { e.preventDefault(); moveFocus('left'); }
-      else if (code === 38) { e.preventDefault(); moveFocus('up'); }
-      else if (code === 39) { e.preventDefault(); moveFocus('right'); }
-      else if (code === 40) { e.preventDefault(); moveFocus('down'); }
-      // OK / Enter
+      if (code === 37) { // Izquierda
+        if (e.preventDefault) e.preventDefault();
+        moveFocus('left');
+        return false;
+      } else if (code === 38) { // Arriba
+        if (e.preventDefault) e.preventDefault();
+        moveFocus('up');
+        return false;
+      } else if (code === 39) { // Derecha
+        if (e.preventDefault) e.preventDefault();
+        moveFocus('right');
+        return false;
+      } else if (code === 40) { // Abajo
+        if (e.preventDefault) e.preventDefault();
+        moveFocus('down');
+        return false;
+      }
+      
+      // Enter / OK (13)
       else if (code === 13) {
-        e.preventDefault();
         if (currentFocus) {
-          currentFocus.click();
+          if (currentFocus.id === 'player-exit-btn') {
+            closePlayer();
+          } else {
+            currentFocus.click();
+          }
+        }
+        return true;
+      }
+
+      // Teclas Atrás / Volver / Exit (8, 27, 461, 10009, 10182, 4)
+      else if (code === 8 || code === 27 || code === 461 || code === 10009 || code === 10182 || code === 4) {
+        if (e.preventDefault) e.preventDefault();
+        closePlayer();
+        return false;
+      }
+
+      // Teclado numérico 1-9 para selección rápida de canales
+      else if (code >= 49 && code <= 57) {
+        var num = code - 48; // 1 to 9
+        var channels = document.getElementsByClassName ? document.getElementsByClassName('channel-card') : [];
+        if (channels && channels.length >= num) {
+          channels[num - 1].click();
         }
       }
-      // Volver / Atrás (8, 27, 461, 10009)
-      else if (code === 8 || code === 27 || code === 461 || code === 10009) {
-        e.preventDefault();
-        closePlayer();
-      }
-      // Números 1 a 9 para sintonización directa
-      else if (code >= 49 && code <= 57) {
-        var num = code - 49;
-        playChannelIdx(num);
-      }
-    }, false);
+    };
 
-    // Arrancar al cargar
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', render);
+    // 9. CONFIGURACIÓN INICIAL DE EVENTOS AL CARGAR LA PÁGINA
+    function initLauncher() {
+      // Registrar eventos de ratón para cursor / air-mouse
+      var list = getFocusableList();
+      for (var i = 0; i < list.length; i++) {
+        (function(target) {
+          target.onmouseenter = function() { setFocus(target); };
+        })(list[i]);
+      }
+
+      var exitBtn = document.getElementById('player-exit-btn');
+      if (exitBtn) {
+        exitBtn.onmouseenter = function() { setFocus(exitBtn); };
+      }
+
+      // Foco en el primer elemento
+      if (list.length > 0) {
+        setFocus(list[0]);
+      }
+    }
+
+    // Arrancar sin importar cuándo se invoque
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initLauncher();
+    } else if (document.addEventListener) {
+      document.addEventListener('DOMContentLoaded', initLauncher, false);
+      window.addEventListener('load', initLauncher, false);
     } else {
-      render();
+      window.onload = initLauncher;
     }
   </script>
 </body>
